@@ -85,7 +85,7 @@ $(BUILD)/%.html: $(SOURCE)/%.md $(TPL)/$(PAGE_TPL) $(SOURCE)/header.html
 		--variable="date:$$(grep -h -w -m 1 'date:' $< | \
 			sed -e 's/date:[[:space:]]*//g' | \
 			tr -d \" | \
-			{ read DATE; date -j -f '%Y/%m/%d' +'%a, %-e %B %Y' $$DATE; } \
+			{ read DATE; date -d $$DATE +'%a, %-e %B %Y'; } \
 			2> /dev/null)" \
 		--variable="modified-date:$$(git log \
 			-1 \
