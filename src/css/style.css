@@ -1,17 +1,9 @@
-@font-face {
-  font-family: "Input Sans";
-  src:
-    url("../assets/InputSans-Regular.woff") format("woff"),
-    url("../assets/InputSans-Regular.woff2") format("woff2"),
-    url("../assets/InputSans-Regular.ttf") format("truetype");
-}
-
 body {
-  font-family: "Input Sans";
   font-size: 16px;
   /* line-height: 1.5; */
   max-width: 700px;
   margin: 3em auto;
+  font-family: sans-serif;
 }
 
 #content {
