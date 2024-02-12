@@ -1,6 +1,7 @@
 SHELL = /bin/sh
 
 # Directories are intentionally not managed by variables for better 
+DATE              := $(shell date -I)
 SOURCE						:= src
 BUILD							:= docs
 TPL								:= templates
@@ -20,19 +21,21 @@ SOURCE_DOCS				:= $(shell find $(SOURCE) \
 										 )
 SOURCE_CSS				:= $(wildcard $(SOURCE)/$(CSS_DIR)/*.css)
 SOURCE_ASSETS			:= $(wildcard $(SOURCE)/$(ASSETS)/*)
+SOURCE_INDEX			:= $(SOURCE)/index.md
 
 # Targets
 TARGET_DIRS				:= $(subst $(SOURCE),$(BUILD),$(SOURCE_DIRS))
 TARGET_DOCS				:= $(patsubst $(SOURCE)/%,$(BUILD)/%,$(SOURCE_DOCS:.md=.html))
 TARGET_CSS				:= $(patsubst $(SOURCE)/%,$(BUILD)/%,$(SOURCE_CSS))
 TARGET_ASSETS			:= $(patsubst $(SOURCE)/%,$(BUILD)/%,$(SOURCE_ASSETS))
+TARGET_INDEX			:= $(BUILD)/index.html
 
 # HTML templates
 PAGE_TPL					:= page.html
 INDEX_TPL					:= index.html
 
 # Pandoc
-PANDOC_VERSION		:= 3.1.9
+PANDOC_VERSION		:= 3.1.11
 PANDOC						:= pandoc 
 PANDOC_SHARED_OPT	:= -f gfm \
 										 -t markdown-smart \
@@ -40,21 +43,19 @@ PANDOC_SHARED_OPT	:= -f gfm \
 										 --to html5 \
 										 --highlight-style tango \
 										 --from=markdown+yaml_metadata_block
-PANDOC_BEFORE     := --include-before-body $(SOURCE)/header.html
-PANDOC_HTML_OPT		:= -M \
-										 --document-css=false \
-										 --css $(CSS_DIR)/style.css
+PANDOC_HTML_OPT		:= --css $(CSS_DIR)/style.css
 PANDOC_PAGE_TPL		:= --template $(TPL)/$(PAGE_TPL)
 PANDOC_INDEX_TPL	:= --template $(TPL)/$(INDEX_TPL)
-PANDOC_METADATA		:= --metadata title-author="Max"
+PANDOC_METADATA		:= --metadata author="Max Hönig"
 
 .PHONY: all
 all: $(BUILD) \
-     $(BUILD)/index.html \
      $(TARGET_DIRS) \
      $(TARGET_CSS) \
      $(TARGET_ASSETS) \
-     $(TARGET_DOCS)
+     $(TARGET_DOCS) \
+     $(BUILD)/index.html \
+     $(BUILD)/atom.xml
 
 # Create directories to hold CSS and other assets
 $(BUILD):
@@ -74,13 +75,12 @@ $(BUILD)/%: $(SOURCE)/%
 	cp $< $@
 
 # Convert Markdown to HTML
-$(BUILD)/%.html: $(SOURCE)/%.md $(TPL)/$(PAGE_TPL) $(SOURCE)/header.html
+$(BUILD)/%.html: $(SOURCE)/%.md $(TPL)/$(PAGE_TPL)
 	@printf "Converting $(notdir $<) >>> $(notdir $@)\n"
 	@$(PANDOC) \
 		$(PANDOC_SHARED_OPT) \
 		$(PANDOC_PAGE_TPL) \
 		$(PANDOC_HTML_OPT) \
-		$(PANDOC_BEFORE) \
 		$(PANDOC_METADATA) \
 		--variable="date:$$(grep -h -w -m 1 'date:' $< | \
 			sed -e 's/date:[[:space:]]*//g' | \
@@ -93,14 +93,14 @@ $(BUILD)/%.html: $(SOURCE)/%.md $(TPL)/$(PAGE_TPL) $(SOURCE)/header.html
       --format='%cd' \
 			$< | \
 			sed -e 's/-/\//g' 2> /dev/null)" \
-		$< -o $@ \
-		2> /dev/null
+		$< -o $@ 2> /dev/null
 
-# Source metadata from all files
-.INTERMEDIATE: index.yaml
-index.yaml: index.sh $(SOURCE_DOCS) $(TPL)/$(INDEX_TPL) $(SOURCE)/header.html
-	@echo 'Parsing metadata...'
-	@./index.sh
+.INTERMEDIATE: atom.xml index.yaml
+index.yaml: index.sh $(TPL)/atom.xml $(SOURCE_DOCS) $(TPL)/$(INDEX_TPL)
+	@./index.sh 
+
+atom.xml: index.sh $(TPL)/atom.xml $(SOURCE_DOCS) $(TPL)/$(INDEX_TPL)
+	@./atom.sh 
 
 # Create index.html
 $(BUILD)/index.html: index.yaml
@@ -108,11 +108,21 @@ $(BUILD)/index.html: index.yaml
 	@$(PANDOC) \
 		$(PANDOC_SHARED_OPT) \
 		--metadata-file index.yaml \
+    --metadata description="Personal Website of Max Hönig" \
+		-V site-title="mxngls.github.io" \
 		$(PANDOC_INDEX_TPL) \
     $(PANDOC_HTML_OPT) \
-		$(PANDOC_BEFORE) \
 		$(PANDOC_METADATA) \
-		-o $(BUILD)/index.html /dev/null
+		$(SOURCE_INDEX) \
+		-o $(TARGET_INDEX) 2> /dev/null 
+
+# Build the atom feed
+$(BUILD)/atom.xml: atom.xml
+	@echo 'Creating building atom feed...'
+	@cp $(TPL)/atom.xml $(BUILD)/atom.xml
+	@sed -i '' -r \
+			-e '/\$$entries\$$/r atom.xml' \
+			-e '/\$$entries\$$/d' $(BUILD)/atom.xml 
 
 # Deploy
 .PHONY: deploy

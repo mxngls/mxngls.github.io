@@ -20,31 +20,43 @@
     <meta name="description" content="$description-meta$" />
     $endif$
     <title>$pagetitle$</title>
+    <link rel="stylesheet" href="$css$" />
     <style>
       $styles.html()$
     </style>
-    <link rel="stylesheet" href="$css$" />
-    $for(header-includes)$ 
-      $header-includes$ 
+    $for(header-includes)$
+      $header-includes$
     $endfor$
   </head>
   <body>
     <div id="content">
       $for(include-before)$ $include-before$ $endfor$
+      <p style="margin-bottom: 2em">
+        <a style="margin: 3em 0" href="index.html">back</a>
+      </p>
       <header id="title-block-header">
         $if(title)$
-        <h1 class="title">$title$</h1>
+        <h2 class="title">$title$</h2>
         $endif$
-        <div style="margin-top: 1em">
-          $if(date)$
-          <span class="date">Posted @ $date$</span>
-          $endif$ $if(modified-date)$
-          <br />
-          <span class="date">Modified @ $modified-date$</span>
-          $endif$
-        </div>
       </header>
-      $body$ $for(include-after)$ $include-after$ $endfor$
+      <main>
+        $if(subtitle)$
+        <p class="subtitle">$subtitle$</p>
+        $endif$
+        $body$
+        $if(date)$
+        <p style="margin-top: 2em">
+          <span class="date">Posted: $date$</span>
+          $if(modified-date)$
+          <br />
+          <span class="date">Modified: $modified-date$</span>
+          $endif$
+        </p>
+        $endif$
+        $for(include-after)$
+          $include-after$ 
+        $endfor$
+      </main>
     </div>
   </body>
 </html>

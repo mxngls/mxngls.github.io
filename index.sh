@@ -1,51 +1,49 @@
 #!/bin/bash
 
-SITE_TITLE='Writing'
-SITE_SUBTITLE='Everything longer than 280 characters'
-INDEX_YML='index.yaml'
 SRC_DIR='src'
+INDEX_YML='index.yaml'
+SECTION_TITLE='Writing'
+SECTION_SUBTITLE='Everything longer than 280 characters'
 
-echo "title: $SITE_TITLE" > $INDEX_YML
-echo "subtitle: $SITE_SUBTITLE" >> $INDEX_YML
-echo "pages:" >> $INDEX_YML
+echo "title: $SECTION_TITLE" > $INDEX_YML
+echo "subtitle: $SECTION_SUBTITLE" >> $INDEX_YML
+echo "posts:" >> $INDEX_YML
 
-SRC_DOCS=$(find $SRC_DIR \
-  -not -name 'about.md' \
+SRC_DOCS=$(find "$SRC_DIR" \
+  -not -name 'index.md' \
   -maxdepth 1 \
-  -name '*.md')
+  -name '*.md' \
+  -print0 \
+  | xargs -0 -I {} sh -c \
+    "sed -rnE 's/date: \"([0-9]{4}\/[0-9]{2}\/[0-9]{2})\"/\\1 /p' {} \
+    | { read date; echo {} \$date; }" \
+  | sort -r -t ' ' -k 2
+)
 
-# Create pairs of file name and creation date
-for f in $SRC_DOCS; do
-  if [ -f "$f" ] && [ "$(basename "$f")" != "index.md" ]; then
-    date=$(grep -h -w -m 1 'date:' "$f" | sed -e 's/\"//g' -e 's/date: //g')
-    pairs+=("${f}"'|'"${date}"'')
-  fi
-done
+# Sort the pairs after their creation date and parse the relating meta 
+# data
+while IFS='' read -r doc; do
+  IFS=' ' read -r filename date <<< "${doc[@]}"
 
-# Sort the pairs after their creation date and parse the relating meta data
-while IFS='' read -r pair; do
-  # Trunc to filename
-  file="$(echo "$pair" | awk -F '|' '{print $1}')"
-
-  title="$(grep -h -w -m 1 'title:' "$file")"
-  date="$(grep -h -w -m 1 'date:' "$file" | sed -e 's/\//./g')"
+  title="$(sed -n -r 's/^title: "(.*)"/\1/p' "$filename")"
+  index_date=$(date -d "$date" +"%Y %b")
 
   # Check for missing meta data
   if [ -z "$title" ]; then
-    printf "Error: Missing title in %s\n" "$file"
+    printf "Error: Missing title in %s\n" "$filename"
     exit 1
   elif [ -z "$date" ]; then
-    printf "Error: Missing date in %s\n" "$file"
+    printf "Error: Missing date in %s\n" "$filename"
     exit 1
   fi
 
   {
-    printf "  - %s\n" "$title";
-    printf "    %s\n" "$date";
-    printf "    %s\n" "path: $(basename "${file%.*}.html")";
-    echo
+    printf "  %s\n  %s\n  %s\n" \
+      "- title: $title" \
+      "  date: $index_date" \
+      "  path: $(basename "${filename%.*}.html")";
   } >> "$INDEX_YML"
 
-done < <(printf "%s\n" "${pairs[@]}" | sort -r -t '|' -k 2)
+done < <(echo "${SRC_DOCS[@]}")
 
 exit 0

@@ -1,9 +1,10 @@
 ---
 title: "This websites reason d'être"
-date:  "2023/11/19"
+subtitle: "Remising about my motivations to create this website"
+date: "2023/11/19"
 ---
 
-## Exposing yourself
+### Exposing yourself
 
 As the discerning reader may have already noticed while skimming the
 'About' page, I took considerable time contemplating the decision to
@@ -29,7 +30,7 @@ totally unfounded.  I started tweeting occasionally about a year ago,
 and, to no surprise, my presence went largely unnoticed.  I expect the
 same for sharing my work and thoughts online.
 
-## Why I write
+### Why I write
 
 Having addressed past reservations about why I refrained from sharing
 more of myself online, the question, what exactly motivates me to do so

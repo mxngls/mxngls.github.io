@@ -1,13 +1,11 @@
 ---
 title: "2023"
-subtitle: "Year in Review"
-date:  "2023/12/31"
+subtitle: "2023 is over and I figured this is a great opportunity to look back onto what I accomplished during that time! "
+date: "2023/12/31"
 ---
 
-2023 is over and I figured this is a great opportunity to look back onto
-what I accomplished during that time!
 
-## Working in Tech
+### Working in Tech
 
 Thinking about all that has happened this year there are two things that
 definitely stand out above anything else. The first one is me getting a
@@ -51,7 +49,7 @@ engineering you just have to know what you are doing to not fuck things
 up. And if that is not the case yet this is something that can simply be
 changed.
 
-## Getting Married
+### Getting Married
 
 The second biggest change this year - a more personal one - was without
 a doubt getting married. Besides the wedding itself the preparations
@@ -63,7 +61,7 @@ every day and night by each others side still feels a bit unreal.
 Growing as a person and together as a married couple is something I am
 eagerly looking forward to in the coming years.
 
-## Miscellaneous
+### Miscellaneous
 
 In terms of things that happened this year I think mentioning starting
 to work as a software engineer and getting married already does its
@@ -102,7 +100,7 @@ via Vim motions and knowing some of the particulars of ZSH's completion
 system less so. Of course I already knew this before, but I guess I had
 to spend - or waste - some time to get to fully understand this.[^1]
 
-## Reading
+### Reading
 
 Coming into this year I did not really have a fixed goal in mind about
 how many books I wanted to read.[^2] Due to logistical reasons most, if

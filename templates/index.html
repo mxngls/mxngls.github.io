@@ -15,37 +15,23 @@
     />
     <meta name="author" content="$author-meta$" />
     <meta name="dcterms.date" content="$date-meta$" />
-    <meta name="keywords" content="$for(keywords)$$keywords$$sep$, $endfor$" />
-    $if(description-meta)$
     <meta name="description" content="$description-meta$" />
-    $endif$
+    <meta name="generator" content="pandoc" />
     <title>$title$</title>
     <style>
       table {
         border: none;
-        lastPos = markInfo['pos']
         border-collapse: separate;
         border-spacing: 0 1em;
-        width: 100%;
+      }
+
+      table td:first-of-type {
+        width: fit-content;
       }
 
       table td {
         vertical-align: top;
-        padding: 5px 15px 5px 5px;
-        border-bottom: 1px solid black;
-        padding-bottom: 10px;
-      }
-
-      table td:first-child {
-        width: 1px;
-      }
-
-      table tr td:last-of-type {
-        padding-right: 0px;
-      }
-
-      table tr td:last-of-type a {
-        text-decoration: none;
+        padding-right: 15px;
       }
 
       $styles.html()$
@@ -55,25 +41,38 @@
   </head>
   <body>
     <div id="content">
-      $include-before$ $if(title)$
-      <header id="title-block-header">
-        <h1 class="title">$title$</h1>
-        $if(subtitle)$
-        <div style="margin-top: 1em">$subtitle$</div>
-        $endif$
+      $include-before$
+      $if(site-title)$
+      <header>
+        <h2 style="margin-top: 2em" class="title">$site-title$</h2>
       </header>
       $endif$
       <main>
-        <table>
-          <tbody>
-            $for(pages)$
-            <tr>
-              <td><span>$it.date$</span></td>
-              <td><a href="$it.path$">$it.title$</a></td>
-            </tr>
-            $endfor$
-          </tbody>
-        </table>
+        $body$
+        <div style="margin-top: 4em" id="posts">
+          <h2 style="display: inline-block; margin: 0 10px 0 0">Writing</h2>
+          <span>(<a href="atom.xml">rss</a>)</span>
+          <table>
+            <tbody>
+              $for(posts)$
+              <tr>
+                <td><span>$it.date$</span></td>
+                <td>
+                  <a
+                    style="
+                      text-decoration: none;
+                      padding-bottom: 2px;
+                      border-bottom: 1px solid black;
+                    "
+                    href="$it.path$"
+                    >$it.title$
+                  </a>
+                </td>
+              </tr>
+              $endfor$
+            </tbody>
+          </table>
+        </div>
       </main>
       $include-after$
     </div>
