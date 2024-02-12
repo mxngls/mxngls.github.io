@@ -22,7 +22,7 @@ while IFS='' read -r doc; do
   IFS=' ' read -r filename date <<< "${doc[@]}"
 
   title="$(sed -n -r 's/^title: "(.*)"/\1/p' "$filename")"
-  atom_date=$(date -d "$date" +"%Y-%m-%dT%H:%M:%SZ")
+  atom_date=$(date -j -f '%Y/%m/%d' "$date" +"%Y-%m-%dT%H:%M:%SZ")
   link="$LINK/$(basename "${filename%.*}.html")"
 
   # Check for missing meta data

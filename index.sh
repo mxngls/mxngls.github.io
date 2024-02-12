@@ -26,7 +26,7 @@ while IFS='' read -r doc; do
   IFS=' ' read -r filename date <<< "${doc[@]}"
 
   title="$(sed -n -r 's/^title: "(.*)"/\1/p' "$filename")"
-  index_date=$(date -d "$date" +"%Y %b")
+  index_date=$(date -j -f '%Y/%m/%d' "$date" +"%Y %b")
 
   # Check for missing meta data
   if [ -z "$title" ]; then
