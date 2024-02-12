@@ -35,7 +35,6 @@ PAGE_TPL					:= page.html
 INDEX_TPL					:= index.html
 
 # Pandoc
-PANDOC_VERSION		:= 3.1.11
 PANDOC						:= pandoc 
 PANDOC_SHARED_OPT	:= -f gfm \
 										 -t markdown-smart \
