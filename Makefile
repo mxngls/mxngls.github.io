@@ -84,7 +84,7 @@ $(BUILD)/%.html: $(SOURCE)/%.md $(TPL)/$(PAGE_TPL)
 		--variable="date:$$(grep -h -w -m 1 'date:' $< | \
 			sed -e 's/date:[[:space:]]*//g' | \
 			tr -d \" | \
-			{ read DATE; date -j -f '%Y/%m/%d' $$DATE +'%a, %-e %B %Y'; } \
+			{ read DATE; date -d $$DATE +'%a, %-e %B %Y'; } \
 			2> /dev/null)" \
 		--variable="modified-date:$$(git log \
 			-1 \
@@ -113,13 +113,13 @@ $(BUILD)/index.html: index.yaml
     $(PANDOC_HTML_OPT) \
 		$(PANDOC_METADATA) \
 		$(SOURCE_INDEX) \
-		-o $(TARGET_INDEX) 2> /dev/null 
+		-o $(TARGET_INDEX)
 
 # Build the atom feed
 $(BUILD)/atom.xml: atom.xml
 	@echo 'Creating building atom feed...'
 	@cp $(TPL)/atom.xml $(BUILD)/atom.xml
-	@sed -i '' -r \
+	@sed -i -r \
 			-e '/\$$entries\$$/r atom.xml' \
 			-e '/\$$entries\$$/d' $(BUILD)/atom.xml 
 
