@@ -39,7 +39,7 @@ while IFS='' read -r doc; do
 
   filename_out="${filename%.*}.html"
   filename_out="${filename_out/$SOURCE_DIR/$BUILD_DIR}"
-  escaped_html="$(gsed \
+  escaped_html="$(sed \
     -e '<!doctype html>/d' \
     -e 's/&/\&amp;/g' \
     -e 's/</\&lt;/g' \
