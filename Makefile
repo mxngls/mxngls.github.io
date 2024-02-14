@@ -121,7 +121,9 @@ $(BUILD)/atom.xml: atom.xml
 	@cp $(TPL)/atom.xml $(BUILD)/atom.xml
 	@sed -i -r \
 			-e '/\$$entries\$$/r atom.xml' \
-			-e '/\$$entries\$$/d' $(BUILD)/atom.xml 
+			-e '/\$$entries\$$/d' \
+			-e "s/\\\$$updated\\\$$/$(date +"%Y-%m-%dT%H:%M:%SZ")/" \
+			$(BUILD)/atom.xml 
 
 # Deploy
 .PHONY: deploy

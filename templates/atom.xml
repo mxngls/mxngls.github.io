@@ -2,16 +2,12 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
   <title>mxngls.gihub.io</title>
   <subtitle>Projects and Writing by Max Engels</subtitle>
-  <link>https://www.mxngls.github.io</link>
- 	<link rel="alternate" href="https://www.mxngls.github.io"/>
-  <link rel="self" href="https://www.mxngls.github.io/atom.xml"/>
   <id>https://www.mxngls.github.io</id>
-  <updated>{{LAST_UPDATE_TIME in RFC3339 format}}</updated>
+  <link rel="alternate" href="https://www.mxngls.github.io/"/>
+  <link rel="self" href="https://www.mxngls.github.io/atom.xml"/>
   <updated>$updated$</updated>
   <author>
     <name>Max Engels</name>
   </author>
-  <entries>
   $entries$
-  </entries>
 </feed>
