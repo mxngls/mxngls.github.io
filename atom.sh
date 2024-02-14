@@ -23,7 +23,7 @@ while IFS='' read -r doc; do
 
   title="$(sed -n -r 's/^title: "(.*)"/\1/p' "$filename")"
   atom_date=$(date -d "$date" +"%Y-%m-%dT%H:%M:%SZ")
-  link="$LINK/$(basename "${filename%.*}.html")"
+  link="$LINK/$(basename "${filename%.*}.html")/"
 
   # Check for missing meta data
   if [ -z "$title" ]; then
@@ -37,6 +37,7 @@ while IFS='' read -r doc; do
   filename_out="${filename%.*}.html"
   filename_out="${filename_out/$SOURCE_DIR/$BUILD_DIR}"
   escaped_html="$(sed \
+    -e 's/<!doctype html>//' \
     -e 's/&/\&amp;/g' \
     -e 's/</\&lt;/g' \
     -e 's/>/\&gt;/g' \
@@ -46,12 +47,12 @@ while IFS='' read -r doc; do
 
   
   {
-    printf "    <entry>\n%s\n%s\n%s\n%s\n%s\n    </entry>\n" \
-      "     <title>$title</title>" \
-      "     <link rel=\"alternate\" type=\"text/html\" href=\"$link\"/>" \
-      "     <id>$link</id>" \
-      "     <published>$atom_date</published>" \
-      "     <content type=\"html\">$escaped_html</content>"
+    printf "  <entry>\n%s\n%s\n%s\n%s\n%s\n  </entry>\n" \
+      "    <title>$title</title>" \
+      "    <link rel=\"alternate\" type=\"text/html\" href=\"$link\"/>" \
+      "    <id>$link</id>" \
+      "    <published>$atom_date</published>" \
+      "    <content type=\"html\">$escaped_html</content>"
   } >> "$ATOM"
 
 done < <(echo "${SOURCE_DOCS[@]}")

@@ -122,7 +122,7 @@ $(BUILD)/atom.xml: atom.xml
 	@sed -i -r \
 			-e '/\$$entries\$$/r atom.xml' \
 			-e '/\$$entries\$$/d' \
-			-e "s/\\\$$updated\\\$$/$(date +"%Y-%m-%dT%H:%M:%SZ")/" \
+			-e "s/\\\$$updated\\\$$/$$(date +"%Y-%m-%dT%H:%M:%SZ")/" \
 			$(BUILD)/atom.xml 
 
 # Deploy
