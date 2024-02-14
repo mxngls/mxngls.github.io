@@ -24,9 +24,8 @@ while IFS='' read -r doc; do
   title="$(sed -n -r 's/^title: "(.*)"/\1/p' "$filename")"
   atom_date=$(date -d "$date" +"%Y-%m-%dT%H:%M:%SZ")
   atom_date_updated="$(git log -1 \
-    --date='format:%a, %e %B %G' \
-    --format='%cd' "$filename" \
-    | \ sed -e 's/-/\//g' 2> /dev/null)"
+    --date='format:%Y-%m-%dT%H:%M:%SZ' \
+    --format='%cd' "$filename" 2> /dev/null)"
   link="$LINK/$(basename "${filename%.*}.html")/"
 
   # Check for missing meta data
@@ -40,8 +39,8 @@ while IFS='' read -r doc; do
 
   filename_out="${filename%.*}.html"
   filename_out="${filename_out/$SOURCE_DIR/$BUILD_DIR}"
-  escaped_html="$(sed \
-    -e 's/<!doctype html>//' \
+  escaped_html="$(gsed \
+    -e '<!doctype html>/d' \
     -e 's/&/\&amp;/g' \
     -e 's/</\&lt;/g' \
     -e 's/>/\&gt;/g' \
