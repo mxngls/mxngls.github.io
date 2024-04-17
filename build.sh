@@ -6,6 +6,7 @@ set -o pipefail
 
 # constants
 SOURCE='src'
+TARGET='docs'
 MD_CONVERT='pandoc'
 TITLE="Max Website"
 
@@ -70,6 +71,7 @@ index_html() {
     </li>\n" "$created" "$ref" "$title")
   done < "$1"
 
+  # shfmt-ignore
   content+="$(printf "
     <ol style=\"list-style: none; padding: 0;\">
       %s
@@ -95,6 +97,43 @@ index_html() {
     'header.html'
 }
 
-meta_tsv | sort -r -t "\t" -k 4 > index.tsv
+create_page() {
+  target="$(awk \
+    -v source="$SOURCE" \
+    -v target="$TARGET" \
+    '{sub(source,target); print $0}' \
+    <<< "${1/%.md/.html}")"
 
+  title="$2"
+  subtitle="$3"
+
+  # should work for the next 8000 years
+  created="${4:0:9}"
+  updated="${5:0:9}"
+
+  dates_text="Written on ${created}."
+  if [ "$created" != "$updated" ]; then
+    dates_text="$dates_text Last updated on ${updated}."
+  fi
+
+  # printf "<small>%s</small>" "$dates_text"| \
+
+  content="$($MD_CONVERT "$f")"
+  awk '
+    BEGIN {
+      content=ARGV[1];
+      ARGV[1]="";
+    }
+
+    /{{CONTENT}}/ {
+      sub(/{{CONTENT}}/,content); 
+      print $0
+    }' "$content" header.html > "$target"
+}
+
+meta_tsv | sort -r -t "\t" -k 4 > index.tsv
 index_html index.tsv > index_test.html
+
+while read -r f title subtitle created updated; do
+  create_page "$f" "$title" "$subtitle" "$created" "$updated"
+done < index.tsv
