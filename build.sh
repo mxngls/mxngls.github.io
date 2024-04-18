@@ -107,7 +107,6 @@ index_html() {
     }
 
     /{{TITLE}}/ { gsub(/{{TITLE}}/,title); }
-
     /{{CONTENT}}/ { gsub(/{{CONTENT}}/,content); }
 
     { print $0; }' \
@@ -131,10 +130,11 @@ create_page() {
 
   dates_text="Written on ${created}."
   if [ "$created" != "$updated" ]; then
-    dates_text="$dates_text Last updated on ${updated}."
+    dates_text="
+    <p>
+      <small>$dates_text Last updated on ${updated}.</small>
+    </p>"
   fi
-
-  # printf "<small>%s</small>" "$dates_text"| \
 
   html="$(
     $MD_CONVERT -f gfm -t html < <(awk \
@@ -144,13 +144,16 @@ create_page() {
   awk '
     BEGIN {
       html=ARGV[1];
+      dates=ARGV[2];
       ARGV[1]="";
+      ARGV[2]="";
     }
 
     /{{CONTENT}}/ {
       gsub(/{{CONTENT}}/,html); 
-      print $0;
-    }' "$html" header.html > "$target"
+      printf("%s ", $0);
+      printf("\n%s\n", dates);
+    }' "$html" "$dates_text" header.html > "$target"
 
 }
 
