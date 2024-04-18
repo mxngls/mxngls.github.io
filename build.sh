@@ -24,21 +24,35 @@ meta_tsv() {
   for f in "$SOURCE"/*.md; do
     if [[ "$f" =~ index.md ]]; then continue; fi
 
-    read -r title subtitle < <(
+    read -r title subtitle content < <(
       awk -v RS= '
+      BEGIN {
+        title = "";
+        subtitle = "";
+      }
+
       # Parse title
       NR == 1 { 
-        sub(/#[[:space:]]+/,""); 
+        gsub(/#[[:space:]]+/,""); 
         title=$0; 
       }
 
       # Parse subtitle
       NR == 2 { 
-        sub(/\n/,"\\n"); 
+        gsub(/\n/,"\\n"); 
         subtitle=$0; 
-        print title "\t" subtitle; 
-        exit;
-      }' "$f"
+      }
+      
+      # Parse content
+      NR > 2 {
+        gsub(/\n/,"\\n"); 
+        content = content $0 "\\n";
+      }
+
+      END {
+        print title "\t" subtitle "\t" content;
+      }
+      ' "$f"
     )
 
     read -r created updated < <(git log \
@@ -48,12 +62,13 @@ meta_tsv() {
           END{updated=$0; print created "\t" updated;}
       ')
 
-    printf '%s\t%s\t%s\t%s\t%s\n' \
+    printf '%s\t%s\t%s\t%s\t%s\t%s\n' \
       "$f" \
       "${title:="No title"}" \
       "${subtitle:="No subtitle"}" \
       "${updated:="draft"}" \
-      "${created:="draft"}"
+      "${created:="draft"}" \
+      "${content:="draft"}"
   done
 }
 
@@ -72,7 +87,8 @@ index_html() {
   done < "$1"
 
   # shfmt-ignore
-  content+="$(printf "
+  content+="$(
+    printf "
     <ol style=\"list-style: none; padding: 0;\">
       %s
     </ol>" "$posts"
@@ -87,9 +103,9 @@ index_html() {
       ARGV[2]="";
     }
 
-    /{{TITLE}}/ { sub(/{{TITLE}}/,title); }
+    /{{TITLE}}/ { gsub(/{{TITLE}}/,title); }
 
-    /{{CONTENT}}/ { sub(/{{CONTENT}}/,content); }
+    /{{CONTENT}}/ { gsub(/{{CONTENT}}/,content); }
 
     { print $0; }' \
     "$TITLE" \
@@ -111,6 +127,8 @@ create_page() {
   created="${4:0:9}"
   updated="${5:0:9}"
 
+  content="$6"
+
   dates_text="Written on ${created}."
   if [ "$created" != "$updated" ]; then
     dates_text="$dates_text Last updated on ${updated}."
@@ -118,22 +136,24 @@ create_page() {
 
   # printf "<small>%s</small>" "$dates_text"| \
 
-  content="$($MD_CONVERT "$f")"
+  html="$($MD_CONVERT -f gfm -t html < <(awk '{gsub(/\\n/,"\n"); print $0}' <<< "$content"))"
+
   awk '
     BEGIN {
-      content=ARGV[1];
+      html=ARGV[1];
       ARGV[1]="";
     }
 
     /{{CONTENT}}/ {
-      sub(/{{CONTENT}}/,content); 
-      print $0
-    }' "$content" header.html > "$target"
+      gsub(/{{CONTENT}}/,html); 
+      print $0;
+    }' "$html" header.html > "$target"
+
 }
 
 meta_tsv | sort -r -t "\t" -k 4 > index.tsv
 index_html index.tsv > index_test.html
 
-while read -r f title subtitle created updated; do
-  create_page "$f" "$title" "$subtitle" "$created" "$updated"
+while read -r f title subtitle created updated content; do
+  create_page "$f" "$title" "$subtitle" "$created" "$updated" "$content"
 done < index.tsv
