@@ -79,7 +79,10 @@ index_html() {
   while read -r f title subtitle created updated; do
     f="$(basename "$f")"
     ref="${f/%.md/.html}"
-    created=$(awk '{sub(/T.*/,""); print $0}' <<< "$created")
+    
+    # should work for the next 8000 years
+    created="${created:0:9}"
+
     posts+=$(printf "
     <li>
         <span>%s</span> \&nbsp; <a href=docs/%s>%s</a>
@@ -114,11 +117,8 @@ index_html() {
 }
 
 create_page() {
-  target="$(awk \
-    -v source="$SOURCE" \
-    -v target="$TARGET" \
-    '{sub(source,target); print $0}' \
-    <<< "${1/%.md/.html}")"
+  tmp_target="${1/%.md/.html}"
+  target="${tmp_target//$SOURCE/$TARGET}"
 
   title="$2"
   subtitle="$3"
@@ -136,7 +136,10 @@ create_page() {
 
   # printf "<small>%s</small>" "$dates_text"| \
 
-  html="$($MD_CONVERT -f gfm -t html < <(awk '{gsub(/\\n/,"\n"); print $0}' <<< "$content"))"
+  html="$(
+    $MD_CONVERT -f gfm -t html < <(awk \
+      '{gsub(/\\n/,"\n"); print $0}' <<< "$content")
+  )"
 
   awk '
     BEGIN {
