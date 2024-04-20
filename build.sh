@@ -9,7 +9,7 @@ SOURCE='src'
 TARGET='docs'
 MD_CONVERT='pandoc'
 TITLE="Max Website"
-HOST="www.mxngls.github.io"
+HOST="mxngls.github.io"
 URL="https://""$HOST"
 
 # metadata format:
@@ -178,26 +178,29 @@ create_page() {
 
 atom_xml() {
 
+  # https://stackoverflow.com/a/5189296/13490131
+  since="$(git log --max-parents=0 HEAD --format='%aI')" 
+  updated="$(awk -v FS="$IFS" 'NR == 1 { print $5; exit;}' "$1")"
   uri="$URL""/atom.xml"
-  since="$(awk 'END { print $5 }' "$1")"
 
   cat << EOF
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
-	<title>"Max Website"</title>
+	<title>Max's Space</title>
 	<link href="$uri" rel="self" />
-	<updated>$(awk -v FS="$IFS" 'NR == 1 { print $4; exit;}' "$1")</updated>
+	<updated>$updated</updated>
 	<author>
-		<name>"Maximilian Hoenig"</name>
+		<name>Maximilian Hoenig</name>
 	</author>
-	<id>tag:$HOST,$since:default-atom-feed</id>
+	<id>tag:www.$HOST,$since:default-atom-feed</id>
 EOF
 
   while read -r f title subtitle created updated content; do
 
     if [[ "$created" = "draft" ]]; then continue; fi
 
-    day="${created:0:10}"
+    t="${f//$SOURCE/$TARGET}"
+    post_updated="${created:0:10}"
     content="$(awk '{gsub(/\\n/, "\n"); print $0;}' <<< "$subtitle""\n""$content" | \
       $MD_CONVERT -f gfm -t html | \
       awk '
@@ -215,7 +218,8 @@ EOF
     <entry>
       <title>$title</title>
       <content type="html">$content</content>
-      <id>tag:$HOST,$day:$title</id>
+		  <link href="${f##"$SOURCE"/}"/>
+      <id>tag:www.$HOST,$post_updated:$t</id>
       <published>$created</published>
       <updated>$updated</updated>
     </entry>
