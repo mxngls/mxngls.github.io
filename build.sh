@@ -9,8 +9,10 @@ SOURCE='src'
 TARGET='docs'
 MD_CONVERT='pandoc'
 TITLE="Max Website"
+HOST="www.mxngls.github.io"
+URL="https://""$HOST"
 
-# Metadata format:
+# metadata format:
 # title
 # subtitle
 # created_at
@@ -42,7 +44,7 @@ meta_tsv() {
         gsub(/\n/,"\\n"); 
         subtitle=$0; 
       }
-      
+
       # Parse content
       NR > 2 {
         gsub(/\n/,"\\n"); 
@@ -79,40 +81,44 @@ index_html() {
   while read -r f title subtitle created updated; do
     f="$(basename "$f")"
     ref="${f/%.md/.html}"
-    
+
     # should work for the next 8000 years
-    created="${created:0:9}"
+    created="${created:0:10}"
 
     posts+=$(printf "
-    <li>
-        <span>%s</span> \&nbsp; <a href=docs/%s>%s</a>
-    </li>\n" "$created" "$ref" "$title")
+    <tr style=\"line-height: 1;\">
+        <td style=\"font-weight: 500;\">%s</td>
+        <td class=\"delimiter\">\\&#12316;</td>
+        <td><a href=docs/%s>%s</a></td>
+    </tr>\n" "$created" "$ref" "$title")
   done < "$1"
 
   # shfmt-ignore
-  content+="$(
-    printf "
-    <ol style=\"list-style: none; padding: 0;\">
-      %s
-    </ol>" "$posts"
+  content+="$(printf "
+    <table>
+      <tbody>
+        %s
+      </tbody>
+    </table>" "$posts"
   )"
 
   # Read input as arguments to avoid escaping newlines
   awk '
     BEGIN {
-      title=ARGV[1]; 
-      content=ARGV[2]; 
-      ARGV[1]=""; 
+      title=ARGV[1];
+      content=ARGV[2];
+      ARGV[1]="";
       ARGV[2]="";
     }
 
     /{{TITLE}}/ { gsub(/{{TITLE}}/,title); }
+
     /{{CONTENT}}/ { gsub(/{{CONTENT}}/,content); }
 
     { print $0; }' \
     "$TITLE" \
     "$content" \
-    'header.html'
+    'template.html'
 }
 
 create_page() {
@@ -121,40 +127,102 @@ create_page() {
 
   title="$2"
   subtitle="$3"
-
-  # should work for the next 8000 years
-  created="${4:0:9}"
-  updated="${5:0:9}"
-
   content="$6"
 
-  dates_text="Written on ${created}."
+  # should work for the next 8000 years
+  created="${4:0:10}"
+  updated="${5:0:10}"
+
+  dates_text="<p><small>Written on ${created}</small></p>"
   if [ "$created" != "$updated" ]; then
     dates_text="
     <p>
-      <small>$dates_text Last updated on ${updated}.</small>
+      <small>Written on ${created}</small>
+      <br/>
+      <small>Last updated on ${updated}</small>
     </p>"
   fi
 
-  html="$(
-    $MD_CONVERT -f gfm -t html < <(awk \
-      '{gsub(/\\n/,"\n"); print $0}' <<< "$content")
-  )"
+  html="$($MD_CONVERT -f gfm -t html "$f")"
+
+  back_button="<a href=\"./\">back</a>"
 
   awk '
     BEGIN {
-      html=ARGV[1];
-      dates=ARGV[2];
-      ARGV[1]="";
-      ARGV[2]="";
+      html = ARGV[1];
+      dates = ARGV[2];
+      title = ARGV[3];
+      back_button = ARGV[4];
+      ARGV[1] = "";
+      ARGV[2] = "";
+      ARGV[3] = "";
+      ARGV[4] = "";
+      r = "{{CONTENT}}";    # string to be replaced
     }
 
-    /{{CONTENT}}/ {
-      gsub(/{{CONTENT}}/,html); 
-      printf("%s ", $0);
-      printf("\n%s\n", dates);
-    }' "$html" "$dates_text" header.html > "$target"
+    /{{CONTENT}}/ {         # treat everything as literals
+      s = index($0,r);
+      $0 = substr($0,1,s-1) back_button "<br/>" html substr($0,s+length(r)) "\n" dates;
+    }
 
+    /{{TITLE}}/ { sub(/{{TITLE}}/,title); }
+
+    { print $0; }' \
+    "$html" \
+    "$dates_text" \
+    "$title" \
+    "$back_button" \
+    template.html > "$target"
+
+}
+
+atom_xml() {
+
+  uri="$URL""/atom.xml"
+  since="$(awk 'END { print $5 }' "$1")"
+
+  cat << EOF
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+	<title>"Max Website"</title>
+	<link href="$uri" rel="self" />
+	<updated>$(awk -v FS="$IFS" 'NR == 1 { print $4; exit;}' "$1")</updated>
+	<author>
+		<name>"Maximilian Hoenig"</name>
+	</author>
+	<id>tag:$HOST,$since:default-atom-feed</id>
+EOF
+
+  while read -r f title subtitle created updated content; do
+
+    if [[ "$created" = "draft" ]]; then continue; fi
+
+    day="${created:0:10}"
+    content="$(awk '{gsub(/\\n/, "\n"); print $0;}' <<< "$subtitle""\n""$content" | \
+      $MD_CONVERT -f gfm -t html | \
+      awk '
+      {
+        gsub(/&/,   "\\&amp;", $0);
+        gsub(/</,  "\\&lt;", $0);
+        gsub(/>/,  "\\&gt;", $0);
+        gsub(/"/,  "\\&#34;", $0);
+        gsub(/'\''/,  "\\&#39;", $0);
+        print $0;
+      }'
+    )"
+
+    cat << EOF
+    <entry>
+      <title>$title</title>
+      <content type="html">$content</content>
+      <id>tag:$HOST,$day:$title</id>
+      <published>$created</published>
+      <updated>$updated</updated>
+    </entry>
+EOF
+  done < "$1"
+
+  echo '</feed>'
 }
 
 meta_tsv | sort -r -t "\t" -k 4 > index.tsv
@@ -163,3 +231,5 @@ index_html index.tsv > index_test.html
 while read -r f title subtitle created updated content; do
   create_page "$f" "$title" "$subtitle" "$created" "$updated" "$content"
 done < index.tsv
+
+atom_xml index.tsv > atom.xml
