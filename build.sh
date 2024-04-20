@@ -192,7 +192,7 @@ atom_xml() {
 	<author>
 		<name>Maximilian Hoenig</name>
 	</author>
-	<id>tag:www.$HOST,$since:default-atom-feed</id>
+	<id>tag:www.$HOST,${since:0:10}:F2B3E23B-ECB6-4EE7-8197-D3C6C2594701</id>
 EOF
 
   while read -r f title subtitle created updated content; do
