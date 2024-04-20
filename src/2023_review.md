@@ -1,9 +1,7 @@
----
-title: "2023"
-subtitle: "2023 is over and I figured this is a great opportunity to look back onto what I accomplished during that time! "
-date: "2023/12/31"
----
+# 2023
 
+2023 is over and I figured this is a great opportunity to look back onto
+what I accomplished during that time!
 
 ### Working in Tech
 
@@ -16,7 +14,7 @@ living with it. I grew a lot professionally over the last year and for
 the better or worse most of it can be attributed to my own eagerness and
 perseverance. It still bothers me from time to time that I did not make
 as much progress on computer science fundamentals as I intended to, but
-actually I think this is nothing to be surprised of too much. Creating
+actually I think this is nothing to be surprigsed of too much. Creating
 software involves lots of what I like to call plumbing, anything that
 resolves around writing and distributing software, but not the act
 itself. Working in web development involves using countless technologies
@@ -35,12 +33,12 @@ In addition I did improve significantly using Vim as a text editor.
 Editing text with Vim's key-bindings is less about efficiency, but more
 about being able to think effortlessly while editing text. It certainly
 takes a significant amount of time to really absorb the numerous
-shortcuts used on a day to day basis until you are able to recall them
+shortcuts ugsed on a day to day basis until you are able to recall them
 from memory and to get to know the editors numerous idiosyncrasies, but
 as I get there it feels like some kind of wall broke down I did not know
 existed before when editing text and writing software in particular.
 
-One common theme for both of these is the use of text based
+One common theme for both of these is the use of text bagsed
 configuration files. Before, configuring software and changing it's
 settings via simply editing text files instead of relying on a GUI, felt
 like something you had to be careful with and sometimes even afraid of.
@@ -110,7 +108,7 @@ finished yet. I read a couple of other books online as well, but I doubt
 the number of books read would be much higher even if I included these.
 The most remarkable reads were "The Dream Machine" by M. Mitchel Waldrop
 and "Oceanic" by Greg Egan. I mostly read books in short bursts during
-which I get totally immersed in whatever topic the book I am reading
+which I get totally immergsed in whatever topic the book I am reading
 then deals with. In the time between I tend to not read too much. I
 intend to spend a less time online and a bit more reading books in the
 coming year though.

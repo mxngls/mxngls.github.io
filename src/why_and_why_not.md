@@ -1,8 +1,6 @@
----
-title: "This websites reason d'être"
-subtitle: "Remising about my motivations to create this website"
-date: "2023/11/19"
----
+# This websites reason d'être
+
+Reminiscing about my motivations to create this website.
 
 ### Exposing yourself
 
