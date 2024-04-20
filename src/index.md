@@ -10,6 +10,4 @@ software I wrote can be found on [Github](https://github.com/mxngls).
 
 If you would like to reach me your best bet might be simply sending me a
 Twitter DM at [@mxngls](https://twitter.com/Mxngls) or leaving a mail at
-[my *full* name].[the second vowel of the latin alphabet].[the German
-word for honey without its umlaut]@[name of the most popular search
-engine].com
+`mˌaksiːmˌiːliːˈɑːn.ˈeː.ˈhˈøːnɪç@ˈd͡ʒˈiːmˈe͡ɪl`. 
