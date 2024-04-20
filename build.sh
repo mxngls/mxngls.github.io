@@ -226,11 +226,11 @@ EOF
 }
 
 mkdir -p "$TARGET"
-index_tsv | sort -r -t "\t" -k 4 > index.tsv
-index_html index.tsv > "$TARGET"/index.html
+index_tsv | sort -r -t "\t" -k 4 > "$TARGET"/index.tsv
+index_html "$TARGET"/index.tsv > "$TARGET"/index.html
 
 while read -r f title subtitle created updated content; do
   create_page "$f" "$title" "$subtitle" "$created" "$updated" "$content"
-done < index.tsv
+done < "$TARGET"/index.tsv
 
-atom_xml index.tsv > "$TARGET"/atom.xml
+atom_xml "$TARGET"/index.tsv > "$TARGET"/atom.xml
