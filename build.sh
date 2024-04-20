@@ -226,7 +226,7 @@ EOF
 }
 
 mkdir -p "$TARGET"
-index_tsv | sort -r -t "\t" -k 4 > "$TARGET"/index.tsv
+index_tsv | sort -r -t "	" -k 4 > "$TARGET"/index.tsv # Use tab as seperator
 index_html "$TARGET"/index.tsv > "$TARGET"/index.html
 
 while read -r f title subtitle created updated content; do
