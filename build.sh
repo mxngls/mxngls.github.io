@@ -22,7 +22,7 @@ URL="https://""$HOST"
 IFS='	'
 
 # tabs as field separator
-meta_tsv() {
+index_tsv() {
   for f in "$SOURCE"/*.md; do
     if [[ "$f" =~ index.md ]]; then continue; fi
 
@@ -89,7 +89,7 @@ index_html() {
     <tr style=\"line-height: 1;\">
         <td style=\"font-weight: 500;\">%s</td>
         <td class=\"delimiter\">\\&#12316;</td>
-        <td><a href=docs/%s>%s</a></td>
+        <td><a href=%s>%s</a></td>
     </tr>\n" "$created" "$ref" "$title")
   done < "$1"
 
@@ -225,11 +225,12 @@ EOF
   echo '</feed>'
 }
 
-meta_tsv | sort -r -t "\t" -k 4 > index.tsv
-index_html index.tsv > index_test.html
+mkdir -p "$TARGET"
+index_tsv | sort -r -t "\t" -k 4 > index.tsv
+index_html index.tsv > "$TARGET"/index.html
 
 while read -r f title subtitle created updated content; do
   create_page "$f" "$title" "$subtitle" "$created" "$updated" "$content"
 done < index.tsv
 
-atom_xml index.tsv > atom.xml
+atom_xml index.tsv > "$TARGET"/atom.xml
