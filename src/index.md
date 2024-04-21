@@ -9,4 +9,6 @@ Twitter DM at [@mxngls](https://twitter.com/Mxngls) or leaving a mail at
 
 <br/>
 
+### Writing
+
 I occasionally share some of my writing [online](./atom.xml):
