@@ -89,7 +89,9 @@ index_html() {
     <tr style=\"line-height: 1;\">
         <td style=\"font-weight: 500;\">%s</td>
         <td class=\"delimiter\">\\&#12316;</td>
-        <td><a href=%s>%s</a></td>
+        <td>
+          <a style=\"color: inherit; font-weight: 500;\" href=%s>%s</a>
+        </td>
     </tr>\n" "$created" "$ref" "$title")
   done < "$1"
 
