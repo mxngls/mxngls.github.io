@@ -5,7 +5,7 @@ TARGET := docs
 
 # build
 build: 
-	@printf "%s\n" "Generting pages..."
+	@printf "%s\n" "Generating pages..."
 	@./build.sh
 	@printf "%s\n" "Done."
 
