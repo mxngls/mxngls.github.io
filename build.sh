@@ -58,7 +58,9 @@ index_tsv() {
     )
 
     read -r created updated < <(git log \
-      --pretty='format:%aI' "$f" 2> /dev/null |
+      --format='format:%ad' \
+      --date='format:%b %d, %Y' \
+       "$f" 2> /dev/null |
       awk '
           NR==1 { created=$0 }
           END{updated=$0; print created "\t" updated;}
@@ -83,14 +85,14 @@ index_html() {
     ref="${f/%.md/.html}"
 
     # should work for the next 8000 years
-    created="${created:0:10}"
+    created="${created:0:12}"
 
     posts+=$(printf "
-    <tr style=\"line-height: 1;\">
-        <td style=\"font-weight: 500;\">%s</td>
-        <td class=\"delimiter\">\\&#12316;</td>
+    <tr style=\"line-height: 2;\">
+        <td>%s</td>
+        <td style=\"padding: 0 0.5rem;\">-</td>
         <td>
-          <a style=\"color: inherit; font-weight: 500;\" href=%s>%s</a>
+          <a style=\"color: inherit;\" href=%s>%s</a>
         </td>
     </tr>\n" "$created" "$ref" "$title")
   done < "$1"
@@ -132,8 +134,8 @@ create_page() {
   content="$6"
 
   # should work for the next 8000 years
-  created="${4:0:10}"
-  updated="${5:0:10}"
+  created="${4:0:12}"
+  updated="${5:0:12}"
 
   dates_text="<p><small>Written on ${created}</small></p>"
   if [ "$created" != "$updated" ]; then
