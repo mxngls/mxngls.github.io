@@ -149,6 +149,7 @@ create_page() {
 
   back_button="<a href=\"./\">back</a>"
 
+  # provide multiline strings as arguments instead of using -v var=""
   awk '
     BEGIN {
       html = ARGV[1];
