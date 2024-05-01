@@ -147,7 +147,7 @@ create_page() {
 
   html="$($MD_CONVERT -f gfm -t html "$f")"
 
-  back_button="<a href=\"./\">back</a>"
+  back_button="<a href=\"./index.html\">back</a>"
 
   # provide multiline strings as arguments instead of using -v var=""
   awk '
