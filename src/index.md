@@ -1,4 +1,4 @@
-# Max
+## nature.computer
 
 Hi I'm Max. I am currently based in Seoul, South Korea. This site functions
 as my [public voice](https://pages.gseis.ucla.edu/faculty/agre/zine.html). 
