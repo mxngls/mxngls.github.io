@@ -84,11 +84,11 @@ index_html() {
     ref="${f/%.md/.html}"
 
     posts+=$(printf "
-    <tr style=\"line-height: 2;\">
+    <tr style=\"line-height: 1.5;\">
         <td>%s</td>
         <td style=\"padding: 0 0.5rem;\">-</td>
         <td>
-          <a style=\"color: inherit;\" href=%s>%s</a>
+          <a href=%s>%s</a>
         </td>
     </tr>\n" "$created" "$ref" "$title")
   done < "$1"
