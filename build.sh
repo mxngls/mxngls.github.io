@@ -60,7 +60,7 @@ index_tsv() {
     read -r created updated < <(git log \
       --format='format:%ad' \
       --date='format:%b %d, %Y' \
-       "$f" 2> /dev/null |
+      "$f" 2> /dev/null |
       awk '
           NR==1 { created=$0 }
           END{updated=$0; print created "\t" updated;}
@@ -77,7 +77,6 @@ index_tsv() {
 }
 
 index_html() {
-
   content="$($MD_CONVERT src/index.md)"
 
   while read -r f title subtitle created updated; do
@@ -95,7 +94,8 @@ index_html() {
   done < "$1"
 
   # shfmt-ignore
-  content+="$(printf "
+  content+="$(
+    printf "
     <table>
       <tbody>
         %s
@@ -180,9 +180,8 @@ create_page() {
 }
 
 atom_xml() {
-
   # https://stackoverflow.com/a/5189296/13490131
-  since="$(git log --max-parents=0 HEAD --format='%aI')" 
+  since="$(git log --max-parents=0 HEAD --format='%aI')"
   updated="$(awk -v FS="$IFS" 'NR == 1 { print $5; exit;}' "$1")"
   uri="$URL""/atom.xml"
 
@@ -197,16 +196,16 @@ atom_xml() {
 	</author>
 	<id>tag:www.$HOST,${since:0:10}:F2B3E23B-ECB6-4EE7-8197-D3C6C2594701</id>
 EOF
-
   while read -r f title subtitle created updated content; do
 
     if [[ "$created" = "draft" ]]; then continue; fi
 
     t="${f//$SOURCE/$TARGET}"
     post_updated="${created:0:10}"
-    content="$(awk '{gsub(/\\n/, "\n"); print $0;}' <<< "$subtitle""\n""$content" | \
-      $MD_CONVERT -f gfm -t html | \
-      awk '
+    content="$(
+      awk '{gsub(/\\n/, "\n"); print $0;}' <<< "$subtitle""\n""$content" |
+        $MD_CONVERT -f gfm -t html |
+        awk '
       {
         gsub(/&/,   "\\&amp;", $0);
         gsub(/</,  "\\&lt;", $0);
