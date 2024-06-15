@@ -142,7 +142,9 @@ create_page() {
 
   html="$($MD_CONVERT -f gfm -t html "$f")"
 
-  back_button="<a href=\"./index.html\">back</a>"
+  back_button="<div style=\"text-align: center\">
+    <a href=\"./index.html\">back</a>
+  </div>"
 
   # provide multiline strings as arguments instead of using -v var=""
   awk '
@@ -160,18 +162,21 @@ create_page() {
 
     /{{CONTENT}}/ {         # treat everything as literals
       s = index($0,r);
-      $0 = substr($0,1,s-1) back_button "<br/>" html substr($0,s+length(r)) "\n" dates;
+      $0 = substr($0,1,s-1) html substr($0,s+length(r)) "\n" dates;
     }
 
     /{{TITLE}}/ { sub(/{{TITLE}}/,title); }
 
-    { print $0; }' \
+    { print $0; }
+
+    END {
+      print back_button
+    }' \
     "$html" \
     "$dates_text" \
     "$title" \
     "$back_button" \
     template.html > "$target"
-
 }
 
 atom_xml() {
