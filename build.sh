@@ -84,9 +84,6 @@ index_html() {
     f="$(basename "$f")"
     ref="${f/%.md/.html}"
 
-    # should work for the next 8000 years
-    created="${created:0:12}"
-
     posts+=$(printf "
     <tr style=\"line-height: 2;\">
         <td>%s</td>
@@ -132,10 +129,6 @@ create_page() {
   title="$2"
   subtitle="$3"
   content="$6"
-
-  # should work for the next 8000 years
-  created="${4:0:12}"
-  updated="${5:0:12}"
 
   dates_text="<p><small>Written on ${created}</small></p>"
   if [ "$created" != "$updated" ]; then
