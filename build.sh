@@ -20,7 +20,7 @@ IFS='	'
 # tabs as field separator
 index_tsv() {
   while read -r f; do
-    if [[ "$f" =~ index.md ]]; then continue; fi
+    if [[ "$f" =~ index.html ]]; then continue; fi
 
     read -r title subtitle content < <(
       awk -v RS= '
@@ -54,6 +54,7 @@ index_tsv() {
     )
 
     read -r created updated < <(git log \
+      --follow \
       --format='format:%ad' \
       --date='format:%b %d, %Y' \
       "$f" 2> /dev/null |
@@ -73,21 +74,20 @@ index_tsv() {
 }
 
 index_html() {
-  content="$($MD_CONVERT src/index.md)"
+  content="$(< "$SOURCE"/index.html)"
 
   while read -r f title subtitle created updated; do
     d="$(dirname "$f")"
+    ref="${f//$SOURCE/$TARGET}"
+    ref="${ref#*/}"
+    ref="${ref/%.md/.html}"
     f="$(basename "$f")"
-    ref="${f/%.md/.html}"
-
-    echo "$d"
-    echo "$f"
 
     if [[ "$d" =~ "notes" ]]; then
       notes+=$(printf "
         <tr style=\"line-height: 1.5;\">
           <td>%s</td>
-          <td style=\"padding: 0 0.5rem;\"
+          <td style=\"padding: 0 0.5rem;\">-</td>
           <td>
             <a href=%s>%s</a>
           </td>
@@ -105,23 +105,20 @@ index_html() {
   done < "$1"
 
   # shfmt-ignore
-  content+="$(
-    printf "
+  content+="$(printf "
     <div>
-      <h3>Notes</h3>
-      <p>
-        Stuff I am working on: 
+      <h4>Notes</h4>
+      <p style=\"margin-top: 0;\">
+        What I am working on: 
       </p> 
       <table>
         <tbody>
           %s
         </tbody>
       </table>
-    </div>
-    <div>
-      <h3>Weblog</h3>
-      <p>
-        I occasionally share some of my writing <a href=\"./atom.xml\">online:</a>
+      <h4>Weblog</h4>
+      <p style=\"margin-top: 0;\">
+        Occasionally shared writings <a href=\"./atom.xml\"><em>(feed)</em>:</a>
       </p> 
       <table>
         <tbody>
@@ -180,7 +177,7 @@ create_page() {
   html="$($MD_CONVERT -f gfm -t html "$f")"
 
   back_button="<div style=\"text-align: center\">
-    <a href=\"./index.html\">back</a>
+    <a href=\"/\">back</a>
   </div>"
 
   # provide multiline strings as arguments instead of using -v var=""
@@ -271,7 +268,7 @@ EOF
 mkdir -p "$TARGET"
 index_tsv | sort -r -t "	" -k 4 > "$TARGET"/index.tsv # Use tab as seperator
 index_html "$TARGET"/index.tsv > "$TARGET"/index.html
-create_dirs "$SOURCE" "$TARGET"
+create_dirs
 
 while read -r f title subtitle created updated content; do
   create_page "$f" "$title" "$subtitle" "$created" "$updated" "$content"
