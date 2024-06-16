@@ -1,9 +1,5 @@
 #!/bin/bash
 
-set -o errexit
-set -o nounset
-set -o pipefail
-
 # constants
 SOURCE='src'
 TARGET='docs'
@@ -23,7 +19,7 @@ IFS='	'
 
 # tabs as field separator
 index_tsv() {
-  for f in "$SOURCE"/*.md; do
+  while read -r f; do
     if [[ "$f" =~ index.md ]]; then continue; fi
 
     read -r title subtitle content < <(
@@ -73,34 +69,66 @@ index_tsv() {
       "${updated:="draft"}" \
       "${created:="draft"}" \
       "${content:="draft"}"
-  done
+  done < <(find "$SOURCE" -type f -name '*.md' -not -path "$SOURCE/drafts/*")
 }
 
 index_html() {
   content="$($MD_CONVERT src/index.md)"
 
   while read -r f title subtitle created updated; do
+    d="$(dirname "$f")"
     f="$(basename "$f")"
     ref="${f/%.md/.html}"
 
-    posts+=$(printf "
-    <tr style=\"line-height: 1.5;\">
-        <td>%s</td>
-        <td style=\"padding: 0 0.5rem;\">-</td>
-        <td>
-          <a href=%s>%s</a>
-        </td>
-    </tr>\n" "$created" "$ref" "$title")
+    echo "$d"
+    echo "$f"
+
+    if [[ "$d" =~ "notes" ]]; then
+      notes+=$(printf "
+        <tr style=\"line-height: 1.5;\">
+          <td>%s</td>
+          <td style=\"padding: 0 0.5rem;\"
+          <td>
+            <a href=%s>%s</a>
+          </td>
+        </tr>\n" "$created" "$ref" "$title")
+    else
+      posts+=$(printf "
+      <tr style=\"line-height: 1.5;\">
+          <td>%s</td>
+          <td style=\"padding: 0 0.5rem;\">-</td>
+          <td>
+            <a href=%s>%s</a>
+          </td>
+      </tr>\n" "$created" "$ref" "$title")
+    fi
   done < "$1"
 
   # shfmt-ignore
   content+="$(
     printf "
-    <table>
-      <tbody>
-        %s
-      </tbody>
-    </table>" "$posts"
+    <div>
+      <h3>Notes</h3>
+      <p>
+        Stuff I am working on: 
+      </p> 
+      <table>
+        <tbody>
+          %s
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <h3>Weblog</h3>
+      <p>
+        I occasionally share some of my writing <a href=\"./atom.xml\">online:</a>
+      </p> 
+      <table>
+        <tbody>
+          %s
+        </tbody>
+      </table>
+    </div>" "$notes" "$posts"
   )"
 
   # Read input as arguments to avoid escaping newlines
@@ -120,6 +148,15 @@ index_html() {
     "$TITLE" \
     "$content" \
     'template.html'
+}
+
+create_dirs() {
+  for d in "$SOURCE"/*; do
+    if [[ -d "$d" ]] && [[ ! "$d" =~ "drafts" ]]; then
+      local dir="${d/$SOURCE/$TARGET}"
+      mkdir "$dir" &> /dev/null
+    fi
+  done
 }
 
 create_page() {
@@ -234,6 +271,7 @@ EOF
 mkdir -p "$TARGET"
 index_tsv | sort -r -t "	" -k 4 > "$TARGET"/index.tsv # Use tab as seperator
 index_html "$TARGET"/index.tsv > "$TARGET"/index.html
+create_dirs "$SOURCE" "$TARGET"
 
 while read -r f title subtitle created updated content; do
   create_page "$f" "$title" "$subtitle" "$created" "$updated" "$content"
