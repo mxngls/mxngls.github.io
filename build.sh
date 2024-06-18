@@ -15,7 +15,7 @@ URL="https://""$HOST"
 # updated_at
 
 # redefine IFS to split on tabs
-IFS='	'
+IFS=$'\t'
 
 # tabs as field separator
 index_tsv() {
@@ -266,7 +266,7 @@ EOF
 }
 
 mkdir -p "$TARGET"
-index_tsv | sort -r -t "	" -k 4 > "$TARGET"/index.tsv # Use tab as seperator
+index_tsv | sort -r -t $'\t' -k4M > "$TARGET"/index.tsv # Use tab as seperator
 index_html "$TARGET"/index.tsv > "$TARGET"/index.html
 create_dirs
 
