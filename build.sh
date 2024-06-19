@@ -105,27 +105,27 @@ index_html() {
   done < "$1"
 
   # shfmt-ignore
-  content+="$(printf "
+  content+="$(printf '
     <div>
       <h4>Notes</h4>
-      <p style=\"margin-top: 0;\">
+      <p style="margin-top: 0;">
         What I am working on: 
       </p> 
-      <table>
+      <table stlye="width: 100%%; table-layout: fixed;">
         <tbody>
           %s
         </tbody>
       </table>
       <h4>Weblog</h4>
-      <p style=\"margin-top: 0;\">
-        Occasionally shared writings <a href=\"./atom.xml\"><em>(feed)</em>:</a>
+      <p style="margin-top: 0;">
+        Occasionally shared writings <a href="./atom.xml"><em>(feed)</em>:</a>
       </p> 
       <table>
         <tbody>
           %s
         </tbody>
       </table>
-    </div>" "$notes" "$posts"
+    </div>' "$notes" "$posts"
   )"
 
   # Read input as arguments to avoid escaping newlines
@@ -236,8 +236,7 @@ EOF
 
     t="${f//$SOURCE/$TARGET}"
     post_updated="${created:0:10}"
-    content="$(
-      awk '{gsub(/\\n/, "\n"); print $0;}' <<< "$subtitle""\n""$content" |
+    content="$(awk '{gsub(/\\n/, "\n"); print $0;}' <<< "$subtitle""\n""$content" |
         $MD_CONVERT -f gfm -t html |
         awk '
       {
