@@ -98,7 +98,7 @@ index_html() {
           <td>%s</td>
           <td style=\"padding: 0 0.5rem;\">-</td>
           <td>
-            <a href=%s>%s</a>
+            <a style=\" \"href=%s>%s</a>
           </td>
       </tr>\n" "$created" "$ref" "$title")
     fi
@@ -164,15 +164,8 @@ create_page() {
   subtitle="$3"
   content="$6"
 
-  dates_text="<p><small>Written on ${created}</small></p>"
-  if [ "$created" != "$updated" ]; then
-    dates_text="
-    <p>
-      <small>Written on ${created}</small>
-      <br/>
-      <small>Last updated on ${updated}</small>
-    </p>"
-  fi
+  date_created="<p>${created}</p>"
+  date_updated="<p><small>Last Updated on ${updated}</small></p>"
 
   html="$($MD_CONVERT -f gfm -t html "$f")"
 
@@ -184,32 +177,38 @@ create_page() {
   awk '
     BEGIN {
       html = ARGV[1];
-      dates = ARGV[2];
-      title = ARGV[3];
-      back_button = ARGV[4];
+      title = ARGV[2];
+      back_button = ARGV[3];
+	  date_created = ARGV[4];
+	  date_updated = ARGV[5];
       ARGV[1] = "";
       ARGV[2] = "";
       ARGV[3] = "";
       ARGV[4] = "";
+      ARGV[5] = "";
       r = "{{CONTENT}}";    # string to be replaced
     }
 
     /{{CONTENT}}/ {         # treat everything as literals
       s = index($0,r);
-      $0 = substr($0,1,s-1) html substr($0,s+length(r)) "\n" dates;
+      $0 = "<div class=\"post\">" \
+			 date_created \
+			 substr($0,1,s-1) \
+			 html \
+			 substr($0,s+length(r)) \
+			 date_updated \
+			 back_button \
+		   "</div>"
     }
 
     /{{TITLE}}/ { sub(/{{TITLE}}/,title); }
 
-    { print $0; }
-
-    END {
-      print back_button
-    }' \
+    { print $0; }' \
     "$html" \
-    "$dates_text" \
     "$title" \
     "$back_button" \
+	"$date_created" \
+	"$date_updated" \
     template.html > "$target"
 }
 
