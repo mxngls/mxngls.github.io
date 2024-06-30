@@ -239,7 +239,7 @@ EOF
         $MD_CONVERT -f gfm -t html |
         awk '
       {
-        gsub(/&/,   "\\&amp;", $0);
+        gsub(/&/,  "\\&amp;", $0);
         gsub(/</,  "\\&lt;", $0);
         gsub(/>/,  "\\&gt;", $0);
         gsub(/"/,  "\\&#34;", $0);
@@ -252,7 +252,7 @@ EOF
     <entry>
       <title>$title</title>
       <content type="html">$content</content>
-		  <link href="${f##"$SOURCE"/}"/>
+        <link href="${f##"$SOURCE"/}"/>
       <id>tag:www.$HOST,$post_updated:$t</id>
       <published>$created</published>
       <updated>$updated</updated>
