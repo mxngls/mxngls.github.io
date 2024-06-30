@@ -8,10 +8,18 @@
             type="application/atom+xml"
             rel="alternate"
         />
-        <link rel="stylesheet" href="/style.css" type="text/css" />
+        <link rel="stylesheet" href="style.css" type="text/css" />
         <title>{{TITLE}}</title>
     </head>
-    <body style="margin: 1rem auto; padding: 0 1rem">
+    <style>
+        tr {
+            line-height: 1.5;
+        }
+        td {
+            vertical-align: top;
+        }
+    </style>
+    <body>
         <main>{{CONTENT}}</main>
     </body>
 </html>

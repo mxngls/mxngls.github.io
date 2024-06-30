@@ -84,49 +84,49 @@ index_html() {
     f="$(basename "$f")"
 
     if [[ "$d" =~ "notes" ]]; then
-      notes+=$(printf "
-        <tr style=\"line-height: 1.5;\">
-          <td>%s</td>
-          <td style=\"padding: 0 0.5rem;\">-</td>
+      notes+=$(printf '
+        <tr>
+          <td style="min-width: 100px;">%s</td>
+          <td style="padding: 0 0.5rem;">-</td>
           <td>
             <a href=%s>%s</a>
           </td>
-        </tr>\n" "$created" "$ref" "$title")
+        </tr>\n' "$created" "$ref" "$title")
     else
-      posts+=$(printf "
-      <tr style=\"line-height: 1.5;\">
-          <td>%s</td>
-          <td style=\"padding: 0 0.5rem;\">-</td>
+      posts+=$(printf '
+      <tr>
+          <td style="min-width: 100px;">%s</td>
+          <td style="padding: 0 0.5rem;">-</td>
           <td>
-            <a style=\" \"href=%s>%s</a>
+            <a href=%s>%s</a>
           </td>
-      </tr>\n" "$created" "$ref" "$title")
+      </tr>\n' "$created" "$ref" "$title")
     fi
   done < "$1"
 
   # shfmt-ignore
   content+="$(printf '
-    <div>
-      <h4>Notes</h4>
-      <p style="margin-top: 0;">
-        What I am working on: 
-      </p> 
-      <table stlye="width: 100%%; table-layout: fixed;">
-        <tbody>
-          %s
-        </tbody>
-      </table>
-      <h4>Weblog</h4>
-      <p style="margin-top: 0;">
-        Occasionally shared writings <a href="./atom.xml"><em>(feed)</em>:</a>
-      </p> 
-      <table>
-        <tbody>
-          %s
-        </tbody>
-      </table>
-    </div>' "$notes" "$posts"
-  )"
+        <div>
+          <h4>Notes</h4>
+          <p style="margin-top: 0;">
+            What I am working on: 
+          </p> 
+          <table stlye="width: 100%%;">
+            <tbody>
+              %s
+            </tbody>
+          </table>
+          <h4>Weblog</h4>
+          <p style="margin-top: 0;">
+            Occasionally shared writings <a href="./atom.xml"><em>(feed)</em>:</a>
+          </p> 
+          <table>
+            <tbody>
+              %s
+            </tbody>
+          </table>
+        </div>
+	  </main>' "$notes" "$posts")"
 
   # Read input as arguments to avoid escaping newlines
   awk '
@@ -139,12 +139,12 @@ index_html() {
 
     /{{TITLE}}/ { gsub(/{{TITLE}}/,title); }
 
-    /{{CONTENT}}/ { gsub(/{{CONTENT}}/,content); }
+    /{{CONTENT}}/ { gsub(/{{CONTENT}}/, content); }
 
     { print $0; }' \
     "$TITLE" \
     "$content" \
-    'template.html'
+    'index_template.html'
 }
 
 create_dirs() {
@@ -157,59 +157,47 @@ create_dirs() {
 }
 
 create_page() {
+  if [[ "$#" -ne 6 ]]; then
+    echo "Invalid number of arguments: $#. Expected six."
+	return 1
+  fi
+
   tmp_target="${1/%.md/.html}"
   target="${tmp_target//$SOURCE/$TARGET}"
 
   title="$2"
   subtitle="$3"
-  content="$6"
 
-  date_created="<p>${created}</p>"
-  date_updated="<p><small>Last Updated on ${updated}</small></p>"
+  date_created="<div style=\"margin-bottom: 1rem;\">${4}</div>"
+  date_updated="<p><small>Last Updated on ${5}</small></p>"
 
-  html="$($MD_CONVERT -f gfm -t html "$f")"
+  body="$($MD_CONVERT -f gfm -t html "$1")"
 
-  back_button="<div style=\"text-align: center\">
-    <a href=\"/\">back</a>
-  </div>"
+  back_button='<div style="text-align: center"><a href="\">back</a></div>'
+
+  content="$date_created $body $back_button $date_updated"
 
   # provide multiline strings as arguments instead of using -v var=""
   awk '
     BEGIN {
-      html = ARGV[1];
-      title = ARGV[2];
-      back_button = ARGV[3];
-	  date_created = ARGV[4];
-	  date_updated = ARGV[5];
+      title = ARGV[1];
+      content = ARGV[2];
       ARGV[1] = "";
       ARGV[2] = "";
-      ARGV[3] = "";
-      ARGV[4] = "";
-      ARGV[5] = "";
-      r = "{{CONTENT}}";    # string to be replaced
     }
 
-    /{{CONTENT}}/ {         # treat everything as literals
-      s = index($0,r);
-      $0 = "<div class=\"post\">" \
-			 date_created \
-			 substr($0,1,s-1) \
-			 html \
-			 substr($0,s+length(r)) \
-			 date_updated \
-			 back_button \
-		   "</div>"
+    /{{CONTENT}}/ { 
+      r = "{{CONTENT}}"
+      s = index($0, r)
+      $0 = substr($0, 1, s-1) content substr($0, s + length(r))
     }
 
-    /{{TITLE}}/ { sub(/{{TITLE}}/,title); }
+    /{{TITLE}}/ { sub(/{{TITLE}}/, title) }
 
-    { print $0; }' \
-    "$html" \
+    { print $0 }' \
     "$title" \
-    "$back_button" \
-	"$date_created" \
-	"$date_updated" \
-    template.html > "$target"
+    "$content" \
+    'template.html' > "$target"
 }
 
 atom_xml() {
@@ -269,7 +257,8 @@ index_html "$TARGET"/index.tsv > "$TARGET"/index.html
 create_dirs
 
 while read -r f title subtitle created updated content; do
-  create_page "$f" "$title" "$subtitle" "$created" "$updated" "$content"
+  create_page "$f" "$title" "$subtitle" "$created" "$updated" "$content" || exit 1
 done < "$TARGET"/index.tsv
 
 atom_xml "$TARGET"/index.tsv > "$TARGET"/atom.xml
+cp style.css "$TARGET"/style.css
