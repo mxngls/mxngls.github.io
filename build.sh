@@ -4,7 +4,7 @@
 SOURCE='src'
 TARGET='docs'
 MD_CONVERT='pandoc'
-TITLE="Max Website"
+TITLE="˚⌇˚"
 HOST="mxngls.github.io"
 URL="https://""$HOST"
 
@@ -86,8 +86,8 @@ index_html() {
     if [[ "$d" =~ "notes" ]]; then
       notes+=$(printf '
         <tr>
-          <td style="min-width: 100px;">%s</td>
-          <td style="padding: 0 0.5rem;">-</td>
+          <td><em>%s</em></td>
+          <td style="padding: 0 0.5rem;">〜</td>
           <td>
             <a href=%s>%s</a>
           </td>
@@ -95,8 +95,8 @@ index_html() {
     else
       posts+=$(printf '
       <tr>
-          <td style="min-width: 100px;">%s</td>
-          <td style="padding: 0 0.5rem;">-</td>
+          <td><em>%s</em></td>
+          <td style="padding: 0 0.5rem;">〜</td>
           <td>
             <a href=%s>%s</a>
           </td>
@@ -107,18 +107,18 @@ index_html() {
   # shfmt-ignore
   content+="$(printf '
         <div>
-          <h4>Notes</h4>
-          <p style="margin-top: 0;">
-            What I am working on: 
+          <h2>Notes</h2>
+          <p>
+            Things I worked on in the past or that I am still tinkering with (mostly of technical nature): 
           </p> 
           <table stlye="width: 100%%;">
             <tbody>
               %s
             </tbody>
           </table>
-          <h4>Weblog</h4>
-          <p style="margin-top: 0;">
-            Occasionally shared writings <a href="./atom.xml"><em>(feed)</em>:</a>
+          <h2>Weblog</h2>
+          <p>
+            Occasionally shared writings that feel hard to categorize <a href="./atom.xml"><em>(feed)</em>:</a>
           </p> 
           <table>
             <tbody>
@@ -169,13 +169,11 @@ create_page() {
   subtitle="$3"
 
   date_created="<div style=\"margin-bottom: 1rem;\">${4}</div>"
-  date_updated="<p><small>Last Updated on ${5}</small></p>"
+  date_updated="<div style=\"bottom: 1rem; position: absolute;\"><small>Last Updated on ${5}</small></div>"
 
   body="$($MD_CONVERT -f gfm -t html "$1")"
 
-  back_button='<div style="text-align: center"><a href="\">back</a></div>'
-
-  content="$date_created $body $back_button $date_updated"
+  content="$date_created $body $date_updated"
 
   # provide multiline strings as arguments instead of using -v var=""
   awk '
