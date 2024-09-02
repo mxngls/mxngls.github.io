@@ -3,8 +3,6 @@
 2023 is over, and I figured this is a great opportunity to look back
 onto what I accomplished during that time!
 
-### Working in Tech
-
 One of the biggest changes this year certainly was getting a job as a
 full-stack developer in Seoul. Even though there is a long list of
 things to complain about (which seems to grow by the day), I am
@@ -26,8 +24,6 @@ utilities](https://github.com/mxngls/dotfiles/tree/main/shell/bin) just
 for myself were particularly fun. On top of that, I came to really like
     Makefiles.
 
-### Getting Married
-
 The second biggest change this year - a more personal one - was without
 a doubt getting married. Besides the wedding itself, the preparations
 took up a big chunk of my time this year, even though my wife selflessly
@@ -36,8 +32,6 @@ great success and lots of fun, not just for me, but for everyone
 involved. Growing as a person, not just by myself, but together as a
 married couple, is something I am eagerly looking forward to in the
 coming years.
-
-### Miscellaneous
 
 In terms of things that happened this year, I think mentioning starting
 to work in Tech and getting married already does its justice. Still,
