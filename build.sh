@@ -168,33 +168,53 @@ create_page() {
   title="$2"
   subtitle="$3"
 
-  date_created="<div style=\"margin-bottom: 1rem;\">${4}</div>"
-  date_updated="<div style=\"bottom: 1rem; position: absolute;\"><small>Last Updated on ${5}</small></div>"
+  date_created="<div style=\"margin: 1rem 0;\">${4}</div>"
+  date_updated="<div style=\"margin: 1rem 0;\"><small>Last Updated on ${5}</small></div>"
+  content="$($MD_CONVERT -f gfm -t html "$1")"
 
-  body="$($MD_CONVERT -f gfm -t html "$1")"
-
-  content="$date_created $body $date_updated"
+  header="$date_created"
+  main="$content"
+  footer="$date_updated"
 
   # provide multiline strings as arguments instead of using -v var=""
   awk '
     BEGIN {
       title = ARGV[1];
-      content = ARGV[2];
+      header = ARGV[2];
+      main = ARGV[3];
+      footer = ARGV[4];
       ARGV[1] = "";
       ARGV[2] = "";
+      ARGV[3] = "";
+      ARGV[4] = "";
+    }
+
+    /{{HEADER}}/ { 
+      r = "{{HEADER}}"
+      s = index($0, r)
+      $0 = substr($0, 1, s-1) header substr($0, s + length(r))
     }
 
     /{{CONTENT}}/ { 
       r = "{{CONTENT}}"
       s = index($0, r)
-      $0 = substr($0, 1, s-1) content substr($0, s + length(r))
+      $0 = substr($0, 1, s-1) main substr($0, s + length(r))
     }
+
+    /{{FOOTER}}/ { 
+      r = "{{FOOTER}}"
+      s = index($0, r)
+      $0 = substr($0, 1, s-1) footer substr($0, s + length(r))
+    }
+
 
     /{{TITLE}}/ { sub(/{{TITLE}}/, title) }
 
     { print $0 }' \
     "$title" \
-    "$content" \
+    "$header" \
+    "$main" \
+    "$footer" \
     'template.html' > "$target"
 }
 
