@@ -8,12 +8,11 @@ The one thing that stands out, is the use of
 [Pandoc](https://pandoc.org/) to convert the Markdown files this
 websites blog articles are written in, to valid HTML documents. The
 reliance on tools as complicated and powerful as Pandoc for this
-seemingly simple task bothers me quite a lot.
-
-I deeply admire [Hundredrabbits](https://100r.co/site/about_us.html)
-approach to creating software and their strive for independence and
-autarky in the context of technology in general. I aim for this website
-to embody the same principles.
+seemingly simple task bothers me quite a lot. I deeply admire
+[Hundredrabbits](https://100r.co/site/about_us.html) approach to
+creating software and their strive for independence and autarky in the
+context of technology in general. I aim for this website to embody the
+same principles.
 
 For this reason, I thought it might be a good idea to try and write my
 own software to convert my writing from Markdown to HTML. I had not much
@@ -25,10 +24,8 @@ of people who worked on something similar, to the best of my knowledge
 there is currently only one implementation that strives to conform fully
 to the [CommonMark](https://github.com/commonmark/) specification. I
 won't go into too much detail about CommonMark itself except for the
-following: 
-
-Markdown emerged without a formal specification. Instead it's rules got
-outlined by an [accompanying
+following: Markdown emerged without a formal specification. Instead it's
+rules got outlined by an [accompanying
 blog](https://daringfireball.net/projects/markdown/) post. Actual
 implementation details needed to be looked for in a script
 (`markdown.pl`) whose purpose was - you guessed it - to transform
@@ -56,8 +53,7 @@ been wrong to not at least give Awk a try. Above all David Given's work
 on the [Mercat](http://cowlark.com/mercat/README.txt) programming system
 and his choice of Awk to write a full
 [recursive-descent](https://en.wikipedia.org/wiki/Recursive_descent_parser)
-bootstrap compiler particular, were my primary inspiration to use Awk. 
-
+bootstrap compiler particular, were my primary inspiration to use Awk.
 Besides, I just like the language a lot and encourage everyone to at
 least read its man page and take a look at some rudimentary
 [examples](https://web.archive.org/web/20220328223853/https://catonmat.net/awk-one-liners-explained-part-one).
@@ -197,15 +193,13 @@ this intermediate result to `parse_line`.
 
 I took care to only parse each character once and resume parsing from
 where we left off utilizing the `b` function parameter, which indicates
-from which point onward inline shall be resumed.
-
-Parsing of the (few) inline elements, that I worked on were so
-cumbersome that they kept me busy for two or three weeks. The rules to
-parse emphasis feel bogus and far detached from the goal of simple
-readability that Markdown's creators had originally in mind during it's
-creation. Thus, it is quite ensuring that one of the fathers of
-CommonMark, John MacFarlane, [seems to
-feel](https://johnmacfarlane.net/beyond-markdown.html) the same
+from which point onward inline shall be resumed. Parsing of the (few)
+inline elements, that I worked on were so cumbersome that they kept me
+busy for two or three weeks. The rules to parse emphasis feel bogus and
+far detached from the goal of simple readability that Markdown's
+creators had originally in mind during it's creation. Thus, it is quite
+ensuring that one of the fathers of CommonMark, John MacFarlane, [seems
+to feel](https://johnmacfarlane.net/beyond-markdown.html) the same
 (emphasis mine):
 
 > There are very good reasons for being conservative in this way. But
@@ -225,8 +219,7 @@ But as I have to grudgingly admit, I no doubt felt the same pain points,
 that plagued David Given when working on his Awk compiler and fully 
 agree with him that Awk's lack of native arrays and the error-prone 
 rules to declare locally scoped variables are [its biggest
-problems](http://lua-users.org/lists/lua-l/2008-02/msg00477.html).
-
+problems](http://lua-users.org/lists/lua-l/2008-02/msg00477.html). 
 I intend to continue working on Awkdown at some time in the future after
 gaining more fundamental knowledge about compilers. Anything else would
 be unserious. The full code including all test cases can be found
