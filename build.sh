@@ -87,7 +87,7 @@ index_html() {
       notes+=$(printf '
         <tr>
           <td><em>%s</em></td>
-          <td style="padding: 0 0.5rem;">〜</td>
+          <td style="padding: 0 0.5rem; vertical-align: middle;">〜</td>
           <td>
             <a href=%s>%s</a>
           </td>
@@ -96,7 +96,7 @@ index_html() {
       posts+=$(printf '
       <tr>
           <td><em>%s</em></td>
-          <td style="padding: 0 0.5rem;">〜</td>
+          <td style="padding: 0 0.5rem; vertical-align: middle;">〜</td>
           <td>
             <a href=%s>%s</a>
           </td>
