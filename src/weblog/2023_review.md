@@ -19,7 +19,7 @@ philosophy](https://en.wikipedia.org/wiki/Unix_philosophy) and Bash
 scripting. This may come as a surprise to some, but learning Bash and
 writing some [useful
 utilities](https://github.com/mxngls/dotfiles/tree/main/shell/bin) just
-for myself were particularly fun. On top of that, I came to really like
+for myself was particularly fun. On top of that, I came to really like
 Makefiles.
 
 The second biggest change this year - a more personal one - was without
@@ -37,31 +37,30 @@ there are two other small lessons I learned that I want to mention
 anyway. In a certain way, I already knew this before, but I realized I
 do miss home more than I was ready to admit before. Speaking Korean
 every day can feel exhausting from time to time. Besides getting better
-at writing software, I spent a non-trivial amount of time learning to
+at writing software, I spent a nontrivial amount of time learning to
 configure and suit it to my liking. One of the most important takeaways,
 though, is simply that the choice of your editor or shell doesn't matter
 too much anyway. Yes, being able to edit text seamlessly with just a few
 keystrokes is fun and may even be faster and more efficient, but it does
-not really make me a better software engineer. What makes me a better
-software engineer instead are the character traits that brought me onto
-the path to learning these tools in the first place. The urge to get to
-know how things work under the hood. The perseverance to stick with
-things that can be uncomfortable and pretty challenging at times.
-Navigating text via Vim motions and knowing some of the particulars of
-ZSH's completion system less so. Of course, I already knew this before,
-but I guess I had to spend some time to get to fully understand
-this.[^1]
+not really make me a better engineer. What makes me a better software
+engineer instead are the character traits that brought me onto the path
+to learning these tools in the first place. The urge to get to know how
+things work under the hood. The perseverance to stick with things that
+can be uncomfortable and pretty challenging at times.  Navigating text
+via Vim motions and knowing some of the particulars of ZSH's completion
+system not so much. Of course, I already knew this before, but I guess I
+had to spend some time to get to fully understand this.[^1]
 
 ### Reading
 
-Coming into this year, I did not really have a fixed goal in mind about
-how many books I wanted to read.[^2] Due to logistical reasons, most, if
-not all, of my reading this year happened on my phone. According to my
+Coming into this year, I did not have a fixed goal in mind about how
+many books I wanted to read.[^2] Due to logistical reasons, most, if not
+all, of my reading this year happened on my phone. According to my
 iBooks library, I read five books this year, with a sixth one not
 finished yet. I read a couple of other books online as well, but I doubt
-the number of books read would be much higher even if I included these. 
-The most remarkable reads were "The Dream Machine" by M. Mitchell 
-Waldrop and "Oceanic" by Greg Egan. I intend to spend less time online 
+the number of books read would be much higher even if I included these.
+The most remarkable reads were "The Dream Machine" by M. Mitchell
+Waldrop and "Oceanic" by Greg Egan. I intend to spend less time online
 and a bit more time reading books in the coming year.
 
 [^1]: Of course, tinkering with configuration files like this doesn't
@@ -73,7 +72,7 @@ and a bit more time reading books in the coming year.
     stands, though.
 
 [^2]: I think this is a silly and not really helpful metric anyway. It
-    seems people that went down this road came to a similar
+    seems people who went down this road came to a similar
     [conclusion](http://malloc.dog/blog/2020/04/23/reading-n-books-per-year/).
     The more different things you read, the higher the probability that
     you retain less from each of them.

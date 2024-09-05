@@ -118,7 +118,7 @@ index_html() {
           </table>
           <h2>Weblog</h2>
           <p>
-            Occasionally shared writings that feel hard to categorize <a href="./atom.xml"><em>(feed)</em>:</a>
+            Occasionally shared writings that feel hard to categorize <a href="./atom.xml"><em>(feed)</em></a>:
           </p> 
           <table>
             <tbody>
