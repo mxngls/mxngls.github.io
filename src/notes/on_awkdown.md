@@ -21,11 +21,13 @@ wet my feet getting more familiar with this domain.
 
 While there are already a [couple](https://github.com/wime12/commonmark)
 of people who worked on something similar, to the best of my knowledge
-there is currently only one implementation that strives to conform fully
-to the [CommonMark](https://github.com/commonmark/) specification. I
-won't go into too much detail about CommonMark itself except for the
-following: Markdown emerged without a formal specification. Instead,
-its rules were outlined by an [accompanying
+there is currently only
+[one](https://github.com/bert-github/gf-markdown-awk) implementation
+that partly strives to conform to the
+[CommonMark](https://github.com/commonmark/) specification. I won't go
+into too much detail about CommonMark itself except for the following:
+Markdown emerged without a formal specification. Instead, its rules were
+outlined by an [accompanying
 blog](https://daringfireball.net/projects/markdown/) post. Actual
 implementation details needed to be looked for in a script
 (`markdown.pl`) whose purpose was - you guessed it - to transform
