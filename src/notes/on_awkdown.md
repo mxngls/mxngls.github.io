@@ -240,7 +240,5 @@ is written in plain text, formatted in a similar spirit as if it
 would have been written in Markdown. Its readability is outstanding and
 requires no external dependencies.
 
----
-
-Thanks to Phil Eaton and Haile Lagi for helpful comments and
-suggestions.
+_Thanks to Phil Eaton and Haile Lagi for helpful comments and
+suggestions._
