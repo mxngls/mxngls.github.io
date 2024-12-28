@@ -40,42 +40,36 @@ reliability](https://twitter.com/arjenroodselaar/status/1788573953784770858).
 
 One might reasonably ask why I chose the Awk programming language in
 particular for this task given its limited scope as a domain-specific
-scripting language. 
-
-First, one has to keep in mind that Markdowns' overwhelming popularity
-today, mostly stems from the ease it provides for writing and
-distributing said writing to the web. For the latter task, there exist a
-sheer endless number of tools and scripts, whose sole purpose is the
-conversion of Markdown to HTML - one of these is the above-mentioned
-Pandoc. Keeping this in mind, the choice of Awk is almost self-evident
-given it can be found in some form or another almost everywhere. 
-
-Second, seeing what other people accomplished using Awk, it would have
-been wrong to not at least give Awk a try. Above all David Given's work
-on the [Mercat](http://cowlark.com/mercat/README.txt) programming system
-and his choice of Awk to write a full
+scripting language. First, one has to keep in mind that Markdowns'
+overwhelming popularity today, mostly stems from the ease it provides
+for writing and distributing said writing to the web. For the latter
+task, there exist a sheer endless number of tools and scripts, whose
+sole purpose is the conversion of Markdown to HTML - one of these is the 
+above-mentioned Pandoc. Keeping this in mind, the choice of Awk is 
+almost self-evident given it can be found in some form or another almost 
+everywhere. Second, seeing what other people accomplished using Awk, it 
+would have been wrong to not at least give Awk a try. Above all David 
+Given's work on the [Mercat](http://cowlark.com/mercat/README.txt) 
+programming system and his choice of Awk to write a full 
 [recursive-descent](https://en.wikipedia.org/wiki/Recursive_descent_parser)
-bootstrap compiler particular, was my primary inspiration to use Awk.
-Besides, I just like the language a lot and encourage everyone to at
+bootstrap compiler particular, was my primary inspiration to use Awk. 
+Besides, I just like the language a lot and encourage everyone to at 
 least read its man page and take a look at some rudimentary
 [examples](https://web.archive.org/web/20220328223853/https://catonmat.net/awk-one-liners-explained-part-one).
 But enough has already been written on that.
 
 ## Result 
 
-I tested 338 of the 652 test cases included in the CommonMark [test
-suite](https://spec.commonmark.org/0.31.2/spec.json). As of writing 25
-of these fail, which is pretty decent.
-
-As the main task of Awkdown is to translate from one markup language to
-another, I followed the same steps as
-[md4c](https://github.com/mity/md4c) and implemented what most resembles
-a [SAX parser](http://www.saxproject.org/event.html). As soon as we
-encounter a valid Markdown node, we immediately proceed to convert it to
-HTML. This approach stands in contrast to the to the [reference
-implementations](https://github.com/commonmark/cmark) of CommonMark,
-which first constructs a full abstract syntax tree before generating
-HTML.
+I tested 338 of the 652 test cases included in the CommonMark [test suite](https://spec.commonmark.org/0.31.2/spec.json). 
+As of writing 25 of these fail, which is pretty decent. As the main task 
+of Awkdown is to translate from one markup language to another, I 
+followed the same steps as [md4c](https://github.com/mity/md4c) and 
+implemented what most resembles a 
+[SAX parser](http://www.saxproject.org/event.html). As soon as we 
+encounter a valid Markdown node, we immediately proceed to convert
+it to HTML. This approach stands in contrast to the to the [reference implementations](https://github.com/commonmark/cmark) 
+of CommonMark, which first constructs a full abstract syntax tree before 
+generating HTML.
 
 The actual parsing order of node types can be illustrated by the below
 diagram:
@@ -94,23 +88,17 @@ simplistic - Markdown to HTML compilers written in Awk as a
 [reference](https://git.sr.ht/~knazarov/markdown.awk). In retrospect
 this was probably a mistake as it set wrong expectations regarding -
 especially - the parsing of inline elements, which proved more
-challenging than initially thought. 
-
-At first, I tried to leverage
-
-        /pattern/ { action }
-
-pairs, that build the core of Awk, as much as possible. First, we look
-for a specific pattern of characters in the current line and if we found
-a match, execute an action. This worked sufficiently well for parsing
-[leaf-block elements](https://spec.commonmark.org/0.31.2/#leaf-blocks)
+challenging than initially thought. At first, I tried to leverage
+`/pattern/ { action }` pairs, that build the core of Awk, as much as
+possible. First, we look for a specific pattern of characters in the
+current line and if we found a match, execute an action. This worked
+sufficiently well for parsing [leaf-block elements](https://spec.commonmark.org/0.31.2/#leaf-blocks) 
 and felt quite intuitive if you have written some Awk before.
 
-Take the parsing of [ATX
-headings](https://spec.commonmark.org/0.31.2/#atx-headings) for example,
-a simple glance at the code should give a good impression what exactly
-we what we are doing here (the `$0` is a special variable in Awk
-referring to the current line):
+Take the parsing of [ATX headings](https://spec.commonmark.org/0.31.2/#atx-headings) 
+for example, a simple glance at the code should give a good impression 
+what exactly we what we are doing here (the `$0` is a special variable 
+in Awk referring to the current line):
 
 ```
 # atx headings
@@ -124,26 +112,11 @@ referring to the current line):
 As I started to tackle inline parsing though, this approach quickly
 broke down due to the recursive nature of inline elements, as we need to
 keep track of previously parsed text nodes belonging to the same block.
-To give a rather simple example, the following: 
-
-```
-**foo **bar baz**
-```
-
-should equal:
-
-```
-<p>**foo <strong>bar baz</strong></p>
-```
-
-and _NOT_:
-
-```
-<p><strong>foo </strong>bar baz**</p>
-```
-
-We cannot simply insert an opening tag for a specific inline node
-without knowing the context of the whole line or blog it belongs to.
+To give a rather simple example, the following: `**foo **bar baz**`
+should equal: `<p>**foo <strong>bar baz</strong></p>` and _NOT_:
+`<p><strong>foo </strong>bar baz**</p>`. We cannot simply insert an
+opening tag for a specific inline node without knowing the context of
+the whole line or blog it belongs to.
 
 The routine handling the parsing of inline elements 
 
@@ -190,18 +163,16 @@ function parse_line(s, b, \
 felt kinda hacky in the sense that we call `parse_line` recursively on
 the return values of all the different parser routines that handle
 parsing of individual inline nodes, even though we eventually return
-this intermediate result to `parse_line`. 
-
-I took care to only parse each character once and resume parsing from
-where we left off utilizing the `b` function parameter, which indicates
-from which point onward inline shall be resumed. Parsing of the (few)
-inline elements, that I worked on were so cumbersome that they kept me
-busy for two or three weeks. The rules to parse emphasis feel bogus and
-far detached from the goal of simple readability that Markdown's
-creators had originally in mind during its creation. Thus, it is quite
-ensuring that one of the fathers of CommonMark, John MacFarlane, [seems
-to feel](https://johnmacfarlane.net/beyond-markdown.html) the same
-(emphasis mine):
+this intermediate result to `parse_line`. I took care to only parse each
+character once and resume parsing from where we left off utilizing the
+`b` function parameter, which indicates from which point onward inline
+shall be resumed. Parsing of the (few) inline elements, that I worked on
+were so cumbersome that they kept me busy for two or three weeks. The
+rules to parse emphasis feel bogus and far detached from the goal of
+simple readability that Markdown's creators had originally in mind
+when conceiving the specification. Thus, it is quite ensuring that one 
+of the fathers of CommonMark, John MacFarlane, [seems to feel](https://johnmacfarlane.net/beyond-markdown.html) 
+the same (emphasis mine):
 
 > There are very good reasons for being conservative in this way. But
 > this respect for the past has made the CommonMark spec a __very
@@ -217,19 +188,15 @@ worthwhile pursuit, I am old enough to know when to take a step back.
 Reevaluating Awk as my programming language of choice, I still do not
 think it is a bad choice per se for the reasons explained above. But as
 I have to grudgingly admit, I no doubt felt the same pain points, that
-plagued David Given when working on his Awk compiler and fully agree
-with him that Awk's lack of native arrays and the error-prone rules to
-declare locally scoped variables are [its biggest
-problems](http://lua-users.org/lists/lua-l/2008-02/msg00477.html). I
-intend to continue working on Awkdown at some time in the future after
+plagued David Given when working on his Awk compiler. I fully agree with 
+him that Awk's lack of native arrays and the error-prone rules to
+declare locally scoped variables are [its biggest problems](http://lua-users.org/lists/lua-l/2008-02/msg00477.html).
+I intend to continue working on Awkdown at some time in the future after
 gaining more fundamental knowledge about compilers. Anything else would
-be unserious. The full code including all test cases can be found
-[online](https://github.com/mxngls/awkdown).
-
+be unserious. The full code including all test cases can be found [online](https://github.com/mxngls/awkdown).
 As a closing note, working with and researching Markdown made me
-question the way we use it today.
-[Citing](https://daringfireball.net/projects/markdown/) John Gruber the
-creator of Markdown:
+question the way we use it today. [Citing](https://daringfireball.net/projects/markdown/) 
+John Gruber the creator of Markdown:
 
 > The overriding design goal for Markdown’s formatting syntax is to make
 > it as readable as possible.
