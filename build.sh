@@ -56,7 +56,7 @@ index_tsv() {
     read -r created updated < <(git log \
       --follow \
       --format='format:%ad' \
-      --date='format:%b %d, %Y' \
+      --date='format:%d/%m/%Y' \
       "$f" 2> /dev/null |
       awk '
           NR==1 { created=$0 }
@@ -86,18 +86,16 @@ index_html() {
     if [[ "$d" =~ "notes" ]]; then
       notes+=$(printf '
         <tr>
-          <td><em>%s</em></td>
-          <td style="padding: 0 0.5rem; vertical-align: middle;">〜</td>
-          <td>
+          <td>%s</td>
+          <td style="padding-left: 10px">
             <a href=%s>%s</a>
           </td>
         </tr>\n' "$created" "$ref" "$title")
     else
       posts+=$(printf '
       <tr>
-          <td><em>%s</em></td>
-          <td style="padding: 0 0.5rem; vertical-align: middle;">〜</td>
-          <td>
+          <td>%s</td>
+          <td style="padding-left: 10px">
             <a href=%s>%s</a>
           </td>
       </tr>\n' "$created" "$ref" "$title")
