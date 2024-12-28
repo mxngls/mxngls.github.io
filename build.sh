@@ -56,7 +56,7 @@ index_tsv() {
     read -r created updated < <(git log \
       --follow \
       --format='format:%ad' \
-      --date='format:%d/%m/%Y' \
+      --date='format:%Y/%m/%d' \
       "$f" 2> /dev/null |
       awk '
           NR==1 { created=$0 }
@@ -268,7 +268,7 @@ EOF
 }
 
 mkdir -p "$TARGET"
-index_tsv | sort -r -t $'\t' -k4M > "$TARGET"/index.tsv # Use tab as seperator
+index_tsv | sort -r -t $'\t' -k4,4 > "$TARGET"/index.tsv # Use tab as seperator
 index_html "$TARGET"/index.tsv > "$TARGET"/index.html
 create_dirs
 
