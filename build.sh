@@ -166,8 +166,8 @@ create_page() {
   title="$2"
   subtitle="$3"
 
-  date_created="<div style=\"margin: 1rem 0;\">${4}</div>"
-  date_updated="<div style=\"margin: 1rem 0;\"><small>Last Updated on ${5}</small></div>"
+  date_created="<div style=\"margin: 2rem 0;\"><a href="/">${4}</a></div>"
+  date_updated="<div style=\"margin: 2rem 0;\"><small>Last Updated on ${5}</small></div>"
   content="$($MD_CONVERT -f gfm -t html "$1")"
 
   header="$date_created"
