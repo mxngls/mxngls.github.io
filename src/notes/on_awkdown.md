@@ -71,18 +71,6 @@ it to HTML. This approach stands in contrast to the to the [reference implementa
 of CommonMark, which first constructs a full abstract syntax tree before 
 generating HTML.
 
-The actual parsing order of node types can be illustrated by the below
-diagram:
-
-```
-+-----------+     +--------+     +-------+
-|           |     |        |     |       |
-| Container |     |  Leaf  |     | Lines |
-|  Blocks   | --> | Blocks | --> |       |
-|           |     |        |     |       |
-+-----------+     +--------+     +-------+
-```
-
 When starting to work on the project, I used a couple of other - rather
 simplistic - Markdown to HTML compilers written in Awk as a
 [reference](https://git.sr.ht/~knazarov/markdown.awk). In retrospect
