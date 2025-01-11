@@ -12,7 +12,7 @@ build:
 # clean the build directory
 clean:
 	@printf "%s\n" "Removing build archive."
-	@rm -r $(TARGET)
+	@rm -r -f $(TARGET)
 	@printf "%s\n" "Done."
 	
 # deploy
