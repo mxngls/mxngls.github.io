@@ -105,26 +105,30 @@ index_html() {
   # shfmt-ignore
   content+="$(printf '
         <div>
-          <h2>Notes</h2>
-          <p>
-            Things I worked on in the past or that I am still tinkering with (mostly of technical nature): 
-          </p> 
-          <table stlye="width: 100%%;">
-            <tbody>
-              %s
-            </tbody>
-          </table>
           <h2>Weblog</h2>
-          <p>
-            Occasionally shared writings that feel hard to categorize <a href="./atom.xml"><em>(feed)</em></a>:
-          </p> 
+          <div style="font-size: 97%%; color: #696969; margin-bottom: 10px; border-bottom: 1.5px solid; border-color: #dedede;">
+            <p style="margin-top: 0.5em;">
+              Occasionally shared writings that feel hard to categorize <a href="./atom.xml"><em>(feed)</em></a>:
+            </p> 
+          </div>
           <table>
             <tbody>
               %s
             </tbody>
           </table>
+          <h2>Notes</h2>
+          <div style="font-size: 98%%; color: #696969; margin-bottom: 10px; border-bottom: 1.5px solid; border-color: #dedede;">
+            <p>
+              Things I worked on in the past or that I am still tinkering with (mostly of technical nature): 
+            </p> 
+          </div>
+          <table stlye="width: 100%%;">
+            <tbody>
+              %s
+            </tbody>
+          </table>
         </div>
-	  </main>' "$notes" "$posts")"
+	  </main>' "$posts" "$notes")"
 
   # Read input as arguments to avoid escaping newlines
   awk '
@@ -166,8 +170,8 @@ create_page() {
   title="$2"
   subtitle="$3"
 
-  date_created="<div style=\"margin: 2rem 0;\"><a href="/">${4}</a></div>"
-  date_updated="<div style=\"margin: 2rem 0;\"><small>Last Updated on ${5}</small></div>"
+  date_created="<div id=\"date-created\" style=\"margin: 2rem 0;\"><a href="/">${4}</a></div>"
+  date_updated="<div id=\"date-updated\" style=\"color: #696969; margin: 2rem 0;\"><small>Last Updated on ${5}</small></div>"
   content="$($MD_CONVERT -f gfm -t html "$1")"
 
   header="$date_created"
@@ -278,3 +282,4 @@ done < "$TARGET"/index.tsv
 
 atom_xml "$TARGET"/index.tsv > "$TARGET"/atom.xml
 cp style.css "$TARGET"/style.css
+cp -R assets "$TARGET"
