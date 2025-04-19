@@ -19,11 +19,11 @@ IFS=$'\t'
 
 # tabs as field separator
 index_tsv() {
-  while read -r f; do
-    if [[ "$f" =~ index.html ]]; then continue; fi
+    while read -r f; do
+        if [[ "$f" =~ index.html ]]; then continue; fi
 
-    read -r title subtitle content < <(
-      awk -v RS= '
+        read -r title subtitle content < <(
+            awk -v RS= '
       BEGIN {
         title = "";
         subtitle = "";
@@ -51,59 +51,59 @@ index_tsv() {
         print title "\t" subtitle "\t" content;
       }
       ' "$f"
-    )
+        )
 
-    read -r created updated < <(git log \
-      --follow \
-      --format='format:%ad' \
-      --date='format:%Y/%m/%d' \
-      "$f" 2> /dev/null |
-      awk '
+        read -r created updated < <(git log \
+            --follow \
+            --format='format:%ad' \
+            --date='format:%Y/%m/%d' \
+            "$f" 2>/dev/null |
+            awk '
           NR==1 { created=$0 }
           END{updated=$0; print created "\t" updated;}
       ')
 
-    printf '%s\t%s\t%s\t%s\t%s\t%s\n' \
-      "$f" \
-      "${title:="No title"}" \
-      "${subtitle:="No subtitle"}" \
-      "${updated:="draft"}" \
-      "${created:="draft"}" \
-      "${content:="draft"}"
-  done < <(find "$SOURCE" -type f -name '*.md' -not -path "$SOURCE/drafts/*")
+        printf '%s\t%s\t%s\t%s\t%s\t%s\n' \
+            "$f" \
+            "${title:="No title"}" \
+            "${subtitle:="No subtitle"}" \
+            "${updated:="draft"}" \
+            "${created:="draft"}" \
+            "${content:="draft"}"
+    done < <(find "$SOURCE" -type f -name '*.md' -not -path "$SOURCE/drafts/*")
 }
 
 index_html() {
-  content="$(< "$SOURCE"/index.html)"
+    content="$(<"$SOURCE"/index.html)"
 
-  while read -r f title subtitle created updated; do
-    d="$(dirname "$f")"
-    ref="${f//$SOURCE/$TARGET}"
-    ref="${ref#*/}"
-    ref="${ref/%.md/.html}"
-    f="$(basename "$f")"
+    while read -r f title subtitle created updated; do
+        d="$(dirname "$f")"
+        ref="${f//$SOURCE/$TARGET}"
+        ref="${ref#*/}"
+        ref="${ref/%.md/.html}"
+        f="$(basename "$f")"
 
-    if [[ "$d" =~ "notes" ]]; then
-      notes+=$(printf '
+        if [[ "$d" =~ "notes" ]]; then
+            notes+=$(printf '
         <tr>
           <td>%s</td>
           <td style="padding-left: 10px">
             <a href=%s>%s</a>
           </td>
         </tr>\n' "$created" "$ref" "$title")
-    else
-      posts+=$(printf '
+        else
+            posts+=$(printf '
       <tr>
           <td>%s</td>
           <td style="padding-left: 10px">
             <a href=%s>%s</a>
           </td>
       </tr>\n' "$created" "$ref" "$title")
-    fi
-  done < "$1"
+        fi
+    done <"$1"
 
-  # shfmt-ignore
-  content+="$(printf '
+    # shfmt-ignore
+    content+="$(printf '
         <div>
           <h2>Weblog</h2>
           <div style="font-size: 97%%; color: #696969; margin-bottom: 10px; border-bottom: 1.5px solid; border-color: #dedede;">
@@ -130,8 +130,8 @@ index_html() {
         </div>
 	  </main>' "$posts" "$notes")"
 
-  # Read input as arguments to avoid escaping newlines
-  awk '
+    # Read input as arguments to avoid escaping newlines
+    awk '
     BEGIN {
       title=ARGV[1];
       content=ARGV[2];
@@ -144,42 +144,42 @@ index_html() {
     /{{CONTENT}}/ { gsub(/{{CONTENT}}/, content); }
 
     { print $0; }' \
-    "$TITLE" \
-    "$content" \
-    'index_template.html'
+        "$TITLE" \
+        "$content" \
+        'index_template.html'
 }
 
 create_dirs() {
-  for d in "$SOURCE"/*; do
-    if [[ -d "$d" ]] && [[ ! "$d" =~ "drafts" ]]; then
-      local dir="${d/$SOURCE/$TARGET}"
-      mkdir "$dir" &> /dev/null
-    fi
-  done
+    for d in "$SOURCE"/*; do
+        if [[ -d "$d" ]] && [[ ! "$d" =~ "drafts" ]]; then
+            local dir="${d/$SOURCE/$TARGET}"
+            mkdir "$dir" &>/dev/null
+        fi
+    done
 }
 
 create_page() {
-  if [[ "$#" -ne 6 ]]; then
-    echo "Invalid number of arguments: $#. Expected six."
-	return 1
-  fi
+    if [[ "$#" -ne 6 ]]; then
+        echo "Invalid number of arguments: $#. Expected six."
+        return 1
+    fi
 
-  tmp_target="${1/%.md/.html}"
-  target="${tmp_target//$SOURCE/$TARGET}"
+    tmp_target="${1/%.md/.html}"
+    target="${tmp_target//$SOURCE/$TARGET}"
 
-  title="$2"
-  subtitle="$3"
+    title="$2"
+    subtitle="$3"
 
-  date_created="<div id=\"date-created\" style=\"margin: 2rem 0;\"><a href="/">${4}</a></div>"
-  date_updated="<div id=\"date-updated\" style=\"color: #696969; margin: 2rem 0;\"><small>Last Updated on ${5}</small></div>"
-  content="$($MD_CONVERT -f gfm -t html "$1")"
+    date_created="<div id=\"date-created\" style=\"margin: 2rem 0;\"><a href="/">${4}</a></div>"
+    date_updated="<div id=\"date-updated\" style=\"color: #696969; margin: 2rem 0;\"><small>Last Updated on ${5}</small></div>"
+    content="$($MD_CONVERT -f gfm -t html "$1")"
 
-  header="$date_created"
-  main="$content"
-  footer="$date_updated"
+    header="$date_created"
+    main="$content"
+    footer="$date_updated"
 
-  # provide multiline strings as arguments instead of using -v var=""
-  awk '
+    # provide multiline strings as arguments instead of using -v var=""
+    awk '
     BEGIN {
       title = ARGV[1];
       header = ARGV[2];
@@ -213,20 +213,20 @@ create_page() {
     /{{TITLE}}/ { sub(/{{TITLE}}/, title) }
 
     { print $0 }' \
-    "$title" \
-    "$header" \
-    "$main" \
-    "$footer" \
-    'template.html' > "$target"
+        "$title" \
+        "$header" \
+        "$main" \
+        "$footer" \
+        'template.html' >"$target"
 }
 
 atom_xml() {
-  # https://stackoverflow.com/a/5189296/13490131
-  since="$(git log --max-parents=0 HEAD --format='%aI')"
-  updated="$(awk -v FS="$IFS" 'NR == 1 { print $5; exit;}' "$1")"
-  uri="$URL""/atom.xml"
+    # https://stackoverflow.com/a/5189296/13490131
+    since="$(git log --max-parents=0 HEAD --format='%aI')"
+    updated="$(awk -v FS="$IFS" 'NR == 1 { print $5; exit;}' "$1")"
+    uri="$URL""/atom.xml"
 
-  cat << EOF
+    cat <<EOF
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 	<title>Max's Space</title>
@@ -237,15 +237,16 @@ atom_xml() {
 	</author>
 	<id>tag:www.$HOST,${since:0:10}:F2B3E23B-ECB6-4EE7-8197-D3C6C2594701</id>
 EOF
-  while read -r f title subtitle created updated content; do
+    while read -r f title subtitle created updated content; do
 
-    if [[ "$created" = "draft" ]]; then continue; fi
+        if [[ "$created" = "draft" ]]; then continue; fi
 
-    t="${f//$SOURCE/$TARGET}"
-    post_updated="${created:0:10}"
-    content="$(awk '{gsub(/\\n/, "\n"); print $0;}' <<< "$subtitle""\n""$content" |
-        $MD_CONVERT -f gfm -t html |
-        awk '
+        t="${f//$SOURCE/$TARGET}"
+        post_updated="${created:0:10}"
+        content="$(
+            awk '{gsub(/\\n/, "\n"); print $0;}' <<<"$subtitle""\n""$content" |
+                $MD_CONVERT -f gfm -t html |
+                awk '
       {
         gsub(/&/,  "\\&amp;", $0);
         gsub(/</,  "\\&lt;", $0);
@@ -254,9 +255,9 @@ EOF
         gsub(/'\''/,  "\\&#39;", $0);
         print $0;
       }'
-    )"
+        )"
 
-    cat << EOF
+        cat <<EOF
     <entry>
       <title>$title</title>
       <content type="html">$content</content>
@@ -266,20 +267,20 @@ EOF
       <updated>$updated</updated>
     </entry>
 EOF
-  done < "$1"
+    done <"$1"
 
-  echo '</feed>'
+    echo '</feed>'
 }
 
 mkdir -p "$TARGET"
-index_tsv | sort -r -t $'\t' -k4,4 > "$TARGET"/index.tsv # Use tab as seperator
-index_html "$TARGET"/index.tsv > "$TARGET"/index.html
+index_tsv | sort -r -t $'\t' -k4,4 >"$TARGET"/index.tsv # Use tab as seperator
+index_html "$TARGET"/index.tsv >"$TARGET"/index.html
 create_dirs
 
 while read -r f title subtitle created updated content; do
-  create_page "$f" "$title" "$subtitle" "$created" "$updated" "$content" || exit 1
-done < "$TARGET"/index.tsv
+    create_page "$f" "$title" "$subtitle" "$created" "$updated" "$content" || exit 1
+done <"$TARGET"/index.tsv
 
-atom_xml "$TARGET"/index.tsv > "$TARGET"/atom.xml
+atom_xml "$TARGET"/index.tsv >"$TARGET"/atom.xml
 cp style.css "$TARGET"/style.css
 cp -R assets "$TARGET"
