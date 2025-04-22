@@ -3,6 +3,9 @@ SHELL = /bin/sh
 SOURCE := src
 TARGET := docs
 
+# deploy
+deploy: clean build
+
 # build
 build: 
 	@printf "%s\n" "Generating pages..."
@@ -15,7 +18,4 @@ clean:
 	@rm -r $(TARGET)
 	@printf "%s\n" "Done."
 	
-# deploy
-deploy: clean build
-
 .PHONY: build clean deploy
