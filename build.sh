@@ -4,9 +4,9 @@
 SOURCE='src'
 TARGET='docs'
 MD_CONVERT='pandoc'
-TITLE="˚⌇˚"
-HOST="mxngls.github.io"
-URL="https://""$HOST"
+TITLE="max's site"
+HOST="maxh.site"
+URL="https://$HOST"
 
 # metadata format:
 # title
@@ -56,7 +56,7 @@ index_tsv() {
         read -r created updated < <(git log \
             --follow \
             --format='format:%ad' \
-            --date='format:%Y/%m/%d' \
+            --date='format:%Y-%m-%d' \
             "$f" 2>/dev/null |
             awk '
           NR==1 { created=$0 }
@@ -224,6 +224,8 @@ atom_xml() {
     # https://stackoverflow.com/a/5189296/13490131
     since="$(git log --max-parents=0 HEAD --format='%aI')"
     updated="$(awk -v FS="$IFS" 'NR == 1 { print $5; exit;}' "$1")"
+    updated="${updated}T00:00:00Z"
+
     uri="$URL""/atom.xml"
 
     cat <<EOF
@@ -242,7 +244,14 @@ EOF
         if [[ "$created" = "draft" ]]; then continue; fi
 
         t="${f//$SOURCE/$TARGET}"
-        post_updated="${created:0:10}"
+
+        # format date to use it as part of a valid URI tag
+        post_updated="${created//\//-}"
+
+        # make dates RFC-3339 compliant
+        created="${created}T00:00:00Z"
+        updated="${updated}T00:00:00Z"
+
         content="$(
             awk '{gsub(/\\n/, "\n"); print $0;}' <<<"$subtitle""\n""$content" |
                 $MD_CONVERT -f gfm -t html |
