@@ -102,33 +102,38 @@ index_html() {
         fi
     done <"$1"
 
-    # shfmt-ignore
     content+="$(printf '
+        <hr>
         <div>
-          <h2>Weblog</h2>
-          <div style="font-size: 97%%; color: #696969; margin-bottom: 10px; border-bottom: 1.5px solid; border-color: #dedede;">
-            <p style="margin-top: 0.5em;">
-              Occasionally shared writings that feel hard to categorize <a href="./atom.xml"><em>(feed)</em></a>:
-            </p> 
-          </div>
-          <table>
-            <tbody>
-              %s
-            </tbody>
-          </table>
-          <h2>Notes</h2>
-          <div style="font-size: 98%%; color: #696969; margin-bottom: 10px; border-bottom: 1.5px solid; border-color: #dedede;">
-            <p>
-              Things I worked on in the past or that I am still tinkering with (mostly of technical nature): 
-            </p> 
-          </div>
-          <table stlye="width: 100%%;">
-            <tbody>
-              %s
-            </tbody>
-          </table>
+            <h2>Posts</h2>
+            <section>
+                <h4 style="margin-bottom: 0.2em;">Weblog</h4>
+                <span style="font-size: 95%%;">
+                    Occasionally shared writings that feel hard to categorize
+                </span> 
+                <div style="margin: 1em 0;">
+                    <table>
+                        <tbody>
+                            %s
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            <section>
+                <h4 style="margin-bottom: 0.2em;">Notes</h4>
+                <span style="font-size: 95%%;">
+                    Things I worked on in the past or that I am still tinkering with: 
+                </span> 
+                <div style="margin: 1em 0;">
+                    <table>
+                        <tbody>
+                            %s
+                        </tbody>
+                    </table>
+                </div>
+            </section>
         </div>
-	  </main>' "$posts" "$notes")"
+    ' "$posts" "$notes")"
 
     # Read input as arguments to avoid escaping newlines
     awk '
