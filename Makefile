@@ -15,7 +15,7 @@ build:
 # clean the build directory
 clean:
 	@printf "%s\n" "Removing build archive."
-	@if [ -d "$(SITE_OUT)" ]; then rm -v -I -r "$(SITE_OUT)"; fi
+	@if [ -d "$(SITE_OUT)" ]; then find "$(SITE_OUT)" -mindepth 1 -delete; fi
 	@printf "%s\n" "Done."
 	
 .PHONY: build clean deploy
