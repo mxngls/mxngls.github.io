@@ -298,3 +298,4 @@ done <"$SITE_TARGET"/index.tsv
 atom_xml "$SITE_TARGET"/index.tsv >"$SITE_TARGET"/atom.xml
 cp style.css "$SITE_TARGET"/style.css
 cp -R assets "$SITE_TARGET"
+rm "$SITE_TARGET"/index.tsv
