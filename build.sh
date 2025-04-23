@@ -78,8 +78,8 @@ index_html() {
 
     while read -r f title subtitle created updated; do
         d="$(dirname "$f")"
-        ref="${f//$SITE_SOURCE/$SITE_TARGET}"
-        ref="${ref#*/}"
+        ref="${f}"
+        ref="/${f##"$SITE_SOURCE"/}"
         ref="${ref/%.md/.html}"
         f="$(basename "$f")"
 
