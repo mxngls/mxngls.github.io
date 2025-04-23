@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # constants
-SOURCE='src'
-TARGET='docs'
+SITE_SOURCE='src'
+SITE_TARGET="${SITE_OUT:-docs}"
 MD_CONVERT='pandoc'
 TITLE="max's site"
 HOST="maxh.site"
@@ -70,15 +70,15 @@ index_tsv() {
             "${updated:="draft"}" \
             "${created:="draft"}" \
             "${content:="draft"}"
-    done < <(find "$SOURCE" -type f -name '*.md' -not -path "$SOURCE/drafts/*")
+    done < <(find "$SITE_SOURCE" -type f -name '*.md' -not -path "$SITE_SOURCE/drafts/*")
 }
 
 index_html() {
-    content="$(<"$SOURCE"/index.html)"
+    content="$(<"$SITE_SOURCE"/index.html)"
 
     while read -r f title subtitle created updated; do
         d="$(dirname "$f")"
-        ref="${f//$SOURCE/$TARGET}"
+        ref="${f//$SITE_SOURCE/$SITE_TARGET}"
         ref="${ref#*/}"
         ref="${ref/%.md/.html}"
         f="$(basename "$f")"
@@ -155,9 +155,9 @@ index_html() {
 }
 
 create_dirs() {
-    for d in "$SOURCE"/*; do
+    for d in "$SITE_SOURCE"/*; do
         if [[ -d "$d" ]] && [[ ! "$d" =~ "drafts" ]]; then
-            local dir="${d/$SOURCE/$TARGET}"
+            local dir="${d/$SITE_SOURCE/$SITE_TARGET}"
             mkdir "$dir" &>/dev/null
         fi
     done
@@ -170,7 +170,7 @@ create_page() {
     fi
 
     tmp_target="${1/%.md/.html}"
-    target="${tmp_target//$SOURCE/$TARGET}"
+    target="${tmp_target//$SITE_SOURCE/$SITE_TARGET}"
 
     title="$2"
     subtitle="$3"
@@ -248,7 +248,7 @@ EOF
 
         if [[ "$created" = "draft" ]]; then continue; fi
 
-        t="${f//$SOURCE/$TARGET}"
+        t="${f//$SITE_SOURCE/$SITE_TARGET}"
 
         # format date to use it as part of a valid URI tag
         post_updated="${created//\//-}"
@@ -275,7 +275,7 @@ EOF
     <entry>
       <title>$title</title>
       <content type="html">$content</content>
-        <link href="${f##"$SOURCE"/}"/>
+        <link href="${f##"$SITE_SOURCE"/}"/>
       <id>tag:www.$HOST,$post_updated:$t</id>
       <published>$created</published>
       <updated>$updated</updated>
@@ -286,15 +286,15 @@ EOF
     echo '</feed>'
 }
 
-mkdir -p "$TARGET"
-index_tsv | sort -r -t $'\t' -k4,4 >"$TARGET"/index.tsv # Use tab as seperator
-index_html "$TARGET"/index.tsv >"$TARGET"/index.html
+mkdir -p "$SITE_TARGET"
+index_tsv | sort -r -t $'\t' -k4,4 >"$SITE_TARGET"/index.tsv # Use tab as seperator
+index_html "$SITE_TARGET"/index.tsv >"$SITE_TARGET"/index.html
 create_dirs
 
 while read -r f title subtitle created updated content; do
     create_page "$f" "$title" "$subtitle" "$created" "$updated" "$content" || exit 1
-done <"$TARGET"/index.tsv
+done <"$SITE_TARGET"/index.tsv
 
-atom_xml "$TARGET"/index.tsv >"$TARGET"/atom.xml
-cp style.css "$TARGET"/style.css
-cp -R assets "$TARGET"
+atom_xml "$SITE_TARGET"/index.tsv >"$SITE_TARGET"/atom.xml
+cp style.css "$SITE_TARGET"/style.css
+cp -R assets "$SITE_TARGET"
