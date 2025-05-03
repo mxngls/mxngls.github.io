@@ -3,13 +3,27 @@ SHELL = /bin/sh
 SITE_SOURCE := src
 SITE_OUT ?= docs 
 
+COMPILER_FLAGS = -xc \
+-std=c99 \
+-fsanitize=undefined \
+-Wall \
+-Wextra \
+-Wconversion \
+-Wno-sign-conversion \
+-Wdouble-promotion \
+-Werror \
+-Wpedantic \
+-Wpointer-arith \
+-D_FORTIFY_SOURCE=2
+
 # deploy
 deploy: clean build
 
 # build
 build: 
 	@printf "%s\n" "Generating pages..."
-	@./build.sh
+	@gcc $(COMPILER_FLAGS) build.c -o build.out
+	@./build.out
 	@printf "%s\n" "Done."
 
 # clean the build directory
