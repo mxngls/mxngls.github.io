@@ -450,8 +450,8 @@ int process_index_file(char *index_file_path, page_header_arr *header_arr) {
         ssize_t bytes_read = fread(page_content, 1, source_file_stat.st_size, source_file);
         if (bytes_read != source_file_stat.st_size - header_len) {
                 if (feof(source_file)) {
-                        printf("Unexpected EOF. Read %zu bytes, expected %lld\n", bytes_read,
-                               source_file_stat.st_size);
+                        printf("Unexpected EOF. Read %zu bytes, expected %jd\n", bytes_read,
+                               (intmax_t)source_file_stat.st_size);
                         result = -1;
                 } else if (ferror(source_file)) {
                         fprintf(stderr, "Failed to read from source %s: %s (errno: %d, line: %d)\n",
