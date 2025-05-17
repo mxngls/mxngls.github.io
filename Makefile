@@ -3,6 +3,8 @@ SHELL = /bin/sh
 SITE_SOURCE := src
 SITE_OUT ?= docs 
 
+COMPILER = clang
+
 COMPILER_FLAGS = -xc \
 -std=c99 \
 -fsanitize=undefined \
@@ -22,7 +24,7 @@ deploy: clean build
 # build
 build: 
 	@printf "%s\n" "Generating pages..."
-	@gcc $(COMPILER_FLAGS) build.c -o build.out
+	@$(COMPILER) $(COMPILER_FLAGS) build.c -o build.out
 	@./build.out
 	@printf "%s\n" "Done."
 
