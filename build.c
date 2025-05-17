@@ -296,9 +296,9 @@ int create_html_page(page_header *header, char *page_content, const char *output
 
         struct tm tm;
 
-        // UTC encoded ISO-8601 full timestamp: 2023-11-19 20:44:13 +0900
+        // UTC encoded ISO-8601 full timestamp: 2023-11-19T20:44:13+09:00
         char created_formatted[256];
-        strptime(header->created, "%Y-%m-%dT%H:%M:%S+%z", &tm);
+        strptime(header->created, "%Y-%m-%dT%H:%M:%S%z", &tm);
         strftime(created_formatted, sizeof(created_formatted), "%d %b %Y", &tm);
 
         fprintf_ret = fprintf(
