@@ -1,7 +1,7 @@
 SHELL = /bin/sh
 
 SITE_SOURCE := src
-SITE_OUT ?= docs 
+SITE_OUT ?= docs
 
 COMPILER = clang
 
@@ -16,7 +16,8 @@ COMPILER_FLAGS = -xc \
 -Werror \
 -Wpedantic \
 -Wpointer-arith \
--D_FORTIFY_SOURCE=2
+-D_FORTIFY_SOURCE=2 \
+-DSITE_OUT=$(SITE_OUT)
 
 # deploy
 deploy: clean build

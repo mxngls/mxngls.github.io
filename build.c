@@ -15,7 +15,14 @@
 
 #define SITE_TITLE "Max's Homepage"
 
-#define TARGET_DIR   "docs"
+#ifdef SITE_OUT
+#define STR(x)     #x
+#define XSTR(x)    STR(x)
+#define TARGET_DIR XSTR(SITE_OUT)
+#else
+#define TARGET_DIR "docs"
+#endif
+
 #define SOURCE_DIR   "src"
 #define PAGES_SUBDIR "pages"
 #define PAGES_TARGET TARGET_DIR "/" PAGES_SUBDIR
@@ -102,11 +109,11 @@ int __copy_file(const char *from, const char *to) {
 }
 
 int __create_output_dirs(void) {
-        if (!mkdir(TARGET_DIR, (mode_t)S_IXUSR | S_IWUSR | S_IRUSR) && errno != EEXIST) {
+        if (mkdir(TARGET_DIR, (mode_t)S_IXUSR | S_IWUSR | S_IRUSR) != 0 && errno != EEXIST) {
                 fprintf(stderr, "%s (errno: %d, line: %d)\n", strerror(errno), errno, __LINE__);
                 return -1;
         }
-        if (!mkdir(PAGES_TARGET, (mode_t)S_IXUSR | S_IWUSR | S_IRUSR) && errno != EEXIST) {
+        if (mkdir(PAGES_TARGET, (mode_t)S_IXUSR | S_IWUSR | S_IRUSR) != 0 && errno != EEXIST) {
                 fprintf(stderr, "%s (errno: %d, line: %d)\n", strerror(errno), errno, __LINE__);
                 return -1;
         }
@@ -375,8 +382,9 @@ page_header *process_page_file(FTSENT *ftsentp) {
                 fclose(source_file);
                 return NULL;
         }
-        char *page_path_href = strchr(page_path, '/');
-        strncpy(header->meta.path, page_path_href, PATH_MAX - 1);
+        char page_href[100] = "/" PAGES_SUBDIR "/";
+        strcat(page_href, ftsentp->fts_name);
+        strncpy(header->meta.path, page_href, PATH_MAX - 1);
 
         // read content
         int header_len      = parse_page_header(source_file, header);
