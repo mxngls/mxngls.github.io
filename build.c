@@ -230,8 +230,7 @@ int create_html_index(char *page_content, const char *output_path, page_header_a
             "    	<title>%s</title>\n"
             "</head>\n"
             "<body>\n"
-            "	<main>\n"
-            "		<h2>Hi, I'm Max</h2>\n",
+            "	<main>\n",
             "/" STYLE_SHEET_PATH, SITE_TITLE);
 
         // content
