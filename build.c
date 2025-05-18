@@ -245,26 +245,16 @@ int create_html_index(char *page_content, const char *output_path, page_header_a
         qsort(header_arr->elems, header_arr->len, sizeof(page_header), compare_page_header);
 
         // add a list of posts to the index
-        if ((fprintf_ret = fprintf(dest_file, "<h3>Weblog</h3>\n "
-                                              "\t\t<dl id=\"post-list\">\n") < 0)) {
-                fprintf(stderr, "%s (errno: %d, line: %d)\n", strerror(errno), errno, __LINE__);
-                fclose(dest_file);
-                return -1;
-        }
+        fprintf_ret = fprintf(dest_file, "<h3>Weblog</h3>\n "
+                                         "<dl id=\"post-list\">\n");
         for (int i = 0; i < header_arr->len; i++) {
                 fprintf_ret = fprintf(dest_file,
-                                      "\t\t<div>\n"
-                                      "\t\t\t<dt><b><a href=\"%s\">%s</a></b></dt>\n"
-                                      "\t\t\t<dd>%s</dd>\n"
-                                      "\t\t</div>\n",
+                                      "<dt><b><a href=\"%s\">%s</a></b></dt>\n"
+                                      "<dd>%s</dd>\n",
                                       header_arr->elems[i]->meta.path, header_arr->elems[i]->title,
                                       header_arr->elems[i]->subtitle);
         }
-        if ((fprintf_ret = fprintf(dest_file, "\t\t</dl>\n") < 0)) {
-                fprintf(stderr, "%s (errno: %d, line: %d)\n", strerror(errno), errno, __LINE__);
-                fclose(dest_file);
-                return -1;
-        }
+        fprintf_ret = fprintf(dest_file, "</dl>\n");
 
         // close <main>
         fprintf_ret = fprintf(dest_file, "	</main>\n"
@@ -325,10 +315,10 @@ int create_html_page(page_header *header, char *page_content, const char *output
 
         // add (sub)title
         if (header->title) {
-                fprintf_ret = fprintf(dest_file, "\t\t<h1>%s</h1>\n", header->title);
+                fprintf_ret = fprintf(dest_file, "<h1>%s</h1>\n", header->title);
         }
         if (header->subtitle) {
-                fprintf_ret = fprintf(dest_file, "\t\t<p>%s</p>\n", header->subtitle);
+                fprintf_ret = fprintf(dest_file, "<p>%s</p>\n", header->subtitle);
         }
 
         // content
