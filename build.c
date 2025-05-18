@@ -109,11 +109,13 @@ int __copy_file(const char *from, const char *to) {
 }
 
 int __create_output_dirs(void) {
-        if (mkdir(TARGET_DIR, (mode_t)S_IXUSR | S_IWUSR | S_IRUSR) != 0 && errno != EEXIST) {
+        if (mkdir(TARGET_DIR, (mode_t)S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH) != 0 &&
+            errno != EEXIST) {
                 fprintf(stderr, "%s (errno: %d, line: %d)\n", strerror(errno), errno, __LINE__);
                 return -1;
         }
-        if (mkdir(PAGES_TARGET, (mode_t)S_IXUSR | S_IWUSR | S_IRUSR) != 0 && errno != EEXIST) {
+        if (mkdir(PAGES_TARGET, (mode_t)S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH) != 0 &&
+            errno != EEXIST) {
                 fprintf(stderr, "%s (errno: %d, line: %d)\n", strerror(errno), errno, __LINE__);
                 return -1;
         }
