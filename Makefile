@@ -1,7 +1,7 @@
 SHELL = /bin/sh
 
 SITE_SOURCE := src
-SITE_OUT ?= docs
+SITE_OUT ?= docs/
 
 COMPILER = clang
 

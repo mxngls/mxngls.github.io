@@ -20,16 +20,16 @@
 #define XSTR(x)    STR(x)
 #define TARGET_DIR XSTR(SITE_OUT)
 #else
-#define TARGET_DIR "docs"
+#define TARGET_DIR "docs/"
 #endif
 
-#define SOURCE_DIR   "src"
-#define PAGES_SUBDIR "pages"
-#define PAGES_TARGET TARGET_DIR "/" PAGES_SUBDIR
+#ifndef SINCE
+#error "This is an error message"
+#endif
 
-#define INDEX_PATH                                                                                 \
-        SOURCE_DIR "/"                                                                             \
-                   "index.html"
+#define SOURCE_DIR "src/"
+
+#define INDEX_PATH       "index.html"
 #define STYLE_SHEET_PATH "style.css"
 
 #define PATH_MAX  100
@@ -73,12 +73,14 @@ int __copy_file(const char *from, const char *to) {
         FILE *to_file   = NULL;
 
         if ((from_file = fopen(from, "r")) == NULL) {
-                fprintf(stderr, "%s (errno: %d, line: %d)\n", strerror(errno), errno, __LINE__);
+                fprintf(stderr, "from_file: %s\n\t%s (errno: %d, line: %d)\n", from,
+                        strerror(errno), errno, __LINE__);
                 return -1;
         }
 
         if ((to_file = fopen(to, "w")) == NULL) {
-                fprintf(stderr, "%s (errno: %d, line: %d)\n", strerror(errno), errno, __LINE__);
+                fprintf(stderr, "to_file: %s\n\t%s (errno: %d, line: %d)\n", to, strerror(errno),
+                        errno, __LINE__);
                 fclose(from_file);
                 return -1;
         }
@@ -109,13 +111,14 @@ int __copy_file(const char *from, const char *to) {
 }
 
 int __create_output_dirs(void) {
-        if (mkdir(TARGET_DIR, (mode_t)S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH) != 0 &&
-            errno != EEXIST) {
+        mode_t mode = S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
+
+        if (mkdir(TARGET_DIR, mode) != 0 && errno != EEXIST) {
                 fprintf(stderr, "%s (errno: %d, line: %d)\n", strerror(errno), errno, __LINE__);
                 return -1;
         }
-        if (mkdir(PAGES_TARGET, (mode_t)S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH) != 0 &&
-            errno != EEXIST) {
+
+        if (mkdir(TARGET_DIR, mode) != 0 && errno != EEXIST) {
                 fprintf(stderr, "%s (errno: %d, line: %d)\n", strerror(errno), errno, __LINE__);
                 return -1;
         }
@@ -233,7 +236,7 @@ int create_html_index(char *page_content, const char *output_path, page_header_a
             "</head>\n"
             "<body>\n"
             "	<main>\n",
-            "/" STYLE_SHEET_PATH, SITE_TITLE);
+            STYLE_SHEET_PATH, SITE_TITLE);
 
         // content
         char *dest_line = strtok((char *)page_content, "\n");
@@ -313,7 +316,7 @@ int create_html_page(page_header *header, char *page_content, const char *output
             "		<a href=\"/\">%s</a>\n"
             "	</header>\n"
             "	<main>\n",
-            "/" STYLE_SHEET_PATH, header->title, created_formatted);
+            STYLE_SHEET_PATH, header->title, created_formatted);
 
         // add (sub)title
         if (header->title) {
@@ -364,7 +367,7 @@ page_header *process_page_file(FTSENT *ftsentp) {
 
         // output path
         char page_path[PATH_MAX];
-        snprintf(page_path, sizeof(page_path), "%s/%s", PAGES_TARGET, ftsentp->fts_name);
+        snprintf(page_path, sizeof(page_path), "%s/%s", TARGET_DIR, ftsentp->fts_name);
 
         page_header *header = calloc(1, sizeof(page_header));
         if (header == NULL) {
@@ -373,7 +376,7 @@ page_header *process_page_file(FTSENT *ftsentp) {
                 fclose(source_file);
                 return NULL;
         }
-        char page_href[100] = "/" PAGES_SUBDIR "/";
+        char page_href[100] = "/";
         strcat(page_href, ftsentp->fts_name);
         strncpy(header->meta.path, page_href, PATH_MAX - 1);
 
@@ -487,11 +490,11 @@ int main(void) {
                 result = -1;
         }
 
-        if (__copy_file(SOURCE_DIR "/" STYLE_SHEET_PATH, TARGET_DIR "/" STYLE_SHEET_PATH) != 0) {
+        if (__copy_file(SOURCE_DIR STYLE_SHEET_PATH, TARGET_DIR STYLE_SHEET_PATH) != 0) {
                 result = -1;
         }
 
-        if ((ftsp = __init_fts(SOURCE_DIR "/" PAGES_SUBDIR)) == NULL) {
+        if ((ftsp = __init_fts(SOURCE_DIR)) == NULL) {
                 result = -1;
         }
 
@@ -500,8 +503,37 @@ int main(void) {
                 if (ftsentp->fts_info != FTS_F) continue;
                 if (ftsentp->fts_name[0] == '.') continue;
 
-                page_header *header = NULL;
+                char *dot = strrchr(ftsentp->fts_name, '.');
+                if (dot == NULL) continue;
+                char *ext = dot + 1;
 
+                // non-html files
+                if (strcmp(ext, "html") != 0) {
+                        char to_path[PATH_MAX];
+                        to_path[0] = '\0';
+
+                        strlcat(to_path, TARGET_DIR, sizeof(to_path));
+                        size_t path_len = strlen(to_path);
+
+                        // possibly add path separator
+                        if (path_len > 0 && to_path[path_len - 1] != '/' &&
+                            path_len + 1 < sizeof(to_path)) {
+                                to_path[path_len]     = '/';
+                                to_path[path_len + 1] = '\0';
+                        }
+
+                        strlcat(to_path, ftsentp->fts_name, sizeof(to_path));
+
+                        __copy_file(ftsentp->fts_path, to_path);
+                        continue;
+                }
+
+                // ignore index for now
+                if (strcmp(ftsentp->fts_name, INDEX_PATH) == 0) {
+                        continue;
+                }
+
+                page_header *header = NULL;
                 if ((header = process_page_file(ftsentp)) == NULL) {
                         result = -1;
                 } else {
@@ -510,7 +542,7 @@ int main(void) {
                 }
         }
 
-        if (process_index_file(INDEX_PATH, &header_arr) != 0) {
+        if (process_index_file(SOURCE_DIR INDEX_PATH, &header_arr) != 0) {
                 fts_close(ftsp);
                 result = -1;
         }
