@@ -24,6 +24,11 @@
 #define _SITE_PATH_MAX         100
 #define _SITE_PAGES_MAX        50
 
+// clang-format off
+#define _SITE_HTML_FONT \
+	"<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">\n" \
+	"<link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>\n" \
+	"<link href=\"https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,200..900;1,200..900&family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&display=swap\" rel=\"stylesheet\">\n"
 
 
 typedef struct {
@@ -216,13 +221,8 @@ int create_html_index(char *page_content, const char *output_path, page_header_a
             "	<meta charset=\"utf-8\">\n"
             "    	<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n"
             "    	<link href=\"/atom.xml\" type=\"application/atom+xml\" rel=\"alternate\">\n"
-            "    	<link rel=\"stylesheet\" href=\"%s\" type=\"text/css\">\n"
-            "		<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\"\n>"
-            "		<link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>\n"
-            "		<link "
-            // clang-format off
-            "		<link href=\"https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&display=swap\" rel=\"stylesheet\">\n"
-            // clang-format on
+            "    	<link rel=\"stylesheet\" href=\"%s\" type=\"text/css\">\n" _SITE_HTML_FONT
+            "\n"
             "    	<title>%s</title>\n"
             "</head>\n"
             "<body>\n"
@@ -297,17 +297,13 @@ int create_html_page(page_header *header, char *page_content, const char *output
             "	<meta charset=\"utf-8\">\n"
             "    	<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n"
             "    	<link href=\"/atom.xml\" type=\"application/atom+xml\" rel=\"alternate\">\n"
-            "    	<link rel=\"stylesheet\" href=\"%s\" type=\"text/css\">\n"
-            "		<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\"\n>"
-            "		<link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>\n"
-            // clang-format off
-            "		<link href=\"https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&display=swap\" rel=\"stylesheet\">\n"
-            // clang-format on
+            "    	<link rel=\"stylesheet\" href=\"%s\" type=\"text/css\">\n" _SITE_HTML_FONT
+            "\n"
             "    	<title>%s</title>\n"
             "</head>\n"
             "<body>\n"
             "	<header>\n"
-            "		<a href=\"/\">%s</a>\n"
+            "		<small id=\"date-created\">%s</small>\n"
             "	</header>\n"
             "	<main>\n",
             _SITE_STYLE_SHEET_PATH, header->title, created_formatted);
