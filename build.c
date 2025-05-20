@@ -30,6 +30,14 @@
 	"<link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>\n" \
 	"<link href=\"https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,200..900;1,200..900&family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&display=swap\" rel=\"stylesheet\">\n"
 
+#define _SITE_NAV \
+	"<nav>\n" \
+	"	<ul>\n" \
+	"		<li><a href=\"/\">Home</a></li>\n" \
+	"		<li><a href=\"/#entries\">Entries</a></li>\n" \
+	"	</ul>\n" \
+	"</nav>\n"
+// clang-format on
 
 typedef struct {
         const char *title;
@@ -225,8 +233,7 @@ int create_html_index(char *page_content, const char *output_path, page_header_a
             "\n"
             "    	<title>%s</title>\n"
             "</head>\n"
-            "<body>\n"
-            "	<main>\n",
+            "<body>\n" _SITE_NAV "	<main>\n",
             _SITE_STYLE_SHEET_PATH, _SITE_TITLE);
 
         // content
@@ -301,8 +308,7 @@ int create_html_page(page_header *header, char *page_content, const char *output
             "\n"
             "    	<title>%s</title>\n"
             "</head>\n"
-            "<body>\n"
-            "	<header>\n"
+            "<body>\n" _SITE_NAV "	<header>\n"
             "		<small id=\"date-created\">%s</small>\n"
             "	</header>\n"
             "	<main>\n",

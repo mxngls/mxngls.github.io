@@ -21,7 +21,11 @@ main {
 
 
 header {
-	margin: 1rem 0;
+	margin-top: 2rem;
+}
+
+h1 {
+	margin-top: 0;
 }
 
 footer {
@@ -32,6 +36,14 @@ pre {
 	overflow-x: auto;
 }
 
+nav > ul {
+	list-style: none;
+	padding: 0;
+}
+nav > ul > li {
+	display: inline-block;
+	margin-right: 1rem;
+}
 
 .index-block {
 	padding-top: 0.5rem;
