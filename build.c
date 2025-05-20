@@ -13,27 +13,18 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-#define SITE_TITLE "Max's Homepage"
-
-#ifdef SITE_OUT
-#define STR(x)     #x
-#define XSTR(x)    STR(x)
-#define TARGET_DIR XSTR(SITE_OUT)
-#else
-#define TARGET_DIR "docs/"
+#ifndef _SITE_EXT_TARGET_DIR
+#define _SITE_EXT_TARGET_DIR "/docs"
 #endif
 
-#ifndef SINCE
-#error "This is an error message"
-#endif
+#define _SITE_TITLE            "Max's Homepage"
+#define _SITE_SOURCE_DIR       "src/"
+#define _SITE_INDEX_PATH       "index.html"
+#define _SITE_STYLE_SHEET_PATH "style.css"
+#define _SITE_PATH_MAX         100
+#define _SITE_PAGES_MAX        50
 
-#define SOURCE_DIR "src/"
 
-#define INDEX_PATH       "index.html"
-#define STYLE_SHEET_PATH "style.css"
-
-#define PATH_MAX  100
-#define PAGES_MAX 50
 
 typedef struct {
         const char *title;
@@ -43,12 +34,12 @@ typedef struct {
         char created_short[11]; // YYYY-MM-DD -> 2023-11-19
         char updated_short[11]; // YYYY-MM-DD -> 2023-11-19
         struct meta {
-                char path[PATH_MAX];
+                char path[_SITE_PATH_MAX];
         } meta;
 } page_header;
 
 typedef struct {
-        page_header *elems[PAGES_MAX];
+        page_header *elems[_SITE_PAGES_MAX];
         int len;
 } page_header_arr;
 
@@ -113,12 +104,12 @@ int __copy_file(const char *from, const char *to) {
 int __create_output_dirs(void) {
         mode_t mode = S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
 
-        if (mkdir(TARGET_DIR, mode) != 0 && errno != EEXIST) {
+        if (mkdir(_SITE_EXT_TARGET_DIR, mode) != 0 && errno != EEXIST) {
                 fprintf(stderr, "%s (errno: %d, line: %d)\n", strerror(errno), errno, __LINE__);
                 return -1;
         }
 
-        if (mkdir(TARGET_DIR, mode) != 0 && errno != EEXIST) {
+        if (mkdir(_SITE_EXT_TARGET_DIR, mode) != 0 && errno != EEXIST) {
                 fprintf(stderr, "%s (errno: %d, line: %d)\n", strerror(errno), errno, __LINE__);
                 return -1;
         }
@@ -236,7 +227,7 @@ int create_html_index(char *page_content, const char *output_path, page_header_a
             "</head>\n"
             "<body>\n"
             "	<main>\n",
-            STYLE_SHEET_PATH, SITE_TITLE);
+            _SITE_STYLE_SHEET_PATH, _SITE_TITLE);
 
         // content
         char *dest_line = strtok((char *)page_content, "\n");
@@ -319,7 +310,7 @@ int create_html_page(page_header *header, char *page_content, const char *output
             "		<a href=\"/\">%s</a>\n"
             "	</header>\n"
             "	<main>\n",
-            STYLE_SHEET_PATH, header->title, created_formatted);
+            _SITE_STYLE_SHEET_PATH, header->title, created_formatted);
 
         // add (sub)title
         if (header->title) {
@@ -369,8 +360,8 @@ page_header *process_page_file(FTSENT *ftsentp) {
         }
 
         // output path
-        char page_path[PATH_MAX];
-        snprintf(page_path, sizeof(page_path), "%s/%s", TARGET_DIR, ftsentp->fts_name);
+        char page_path[_SITE_PATH_MAX];
+        snprintf(page_path, sizeof(page_path), "%s/%s", _SITE_EXT_TARGET_DIR, ftsentp->fts_name);
 
         page_header *header = calloc(1, sizeof(page_header));
         if (header == NULL) {
@@ -381,7 +372,7 @@ page_header *process_page_file(FTSENT *ftsentp) {
         }
         char page_href[100] = "/";
         strcat(page_href, ftsentp->fts_name);
-        strncpy(header->meta.path, page_href, PATH_MAX - 1);
+        strncpy(header->meta.path, page_href, _SITE_PATH_MAX - 1);
 
         // read content
         int header_len      = parse_page_header(source_file, header);
@@ -431,10 +422,10 @@ int process_index_file(char *index_file_path, page_header_arr *header_arr) {
         }
 
         // output path
-        char page_path[PATH_MAX];
+        char page_path[_SITE_PATH_MAX];
         const char *filename = strrchr(index_file_path, '/');
         filename ? filename++ : (filename = index_file_path);
-        snprintf(page_path, sizeof(page_path), "%s/%s", TARGET_DIR, filename);
+        snprintf(page_path, sizeof(page_path), "%s/%s", _SITE_EXT_TARGET_DIR, filename);
 
         page_header *header = calloc(1, sizeof(page_header));
         if (header == NULL) {
@@ -493,11 +484,12 @@ int main(void) {
                 result = -1;
         }
 
-        if (__copy_file(SOURCE_DIR STYLE_SHEET_PATH, TARGET_DIR STYLE_SHEET_PATH) != 0) {
+        if (__copy_file(_SITE_SOURCE_DIR _SITE_STYLE_SHEET_PATH,
+                        _SITE_EXT_TARGET_DIR _SITE_STYLE_SHEET_PATH) != 0) {
                 result = -1;
         }
 
-        if ((ftsp = __init_fts(SOURCE_DIR)) == NULL) {
+        if ((ftsp = __init_fts(_SITE_SOURCE_DIR)) == NULL) {
                 result = -1;
         }
 
@@ -512,10 +504,10 @@ int main(void) {
 
                 // non-html files
                 if (strcmp(ext, "html") != 0) {
-                        char to_path[PATH_MAX];
+                        char to_path[_SITE_PATH_MAX];
                         to_path[0] = '\0';
 
-                        strlcat(to_path, TARGET_DIR, sizeof(to_path));
+                        strlcat(to_path, _SITE_EXT_TARGET_DIR, sizeof(to_path));
                         size_t path_len = strlen(to_path);
 
                         // possibly add path separator
@@ -532,7 +524,7 @@ int main(void) {
                 }
 
                 // ignore index for now
-                if (strcmp(ftsentp->fts_name, INDEX_PATH) == 0) {
+                if (strcmp(ftsentp->fts_name, _SITE_INDEX_PATH) == 0) {
                         continue;
                 }
 
@@ -545,7 +537,7 @@ int main(void) {
                 }
         }
 
-        if (process_index_file(SOURCE_DIR INDEX_PATH, &header_arr) != 0) {
+        if (process_index_file(_SITE_SOURCE_DIR _SITE_INDEX_PATH, &header_arr) != 0) {
                 fts_close(ftsp);
                 result = -1;
         }

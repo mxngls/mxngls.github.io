@@ -1,7 +1,6 @@
 SHELL = /bin/sh
 
-SITE_SOURCE := src
-SITE_OUT ?= docs/
+_SITE_EXT_TARGET_DIR ?= docs/
 
 COMPILER = clang
 
@@ -17,7 +16,7 @@ COMPILER_FLAGS = -xc \
 -Wpedantic \
 -Wpointer-arith \
 -D_FORTIFY_SOURCE=2 \
--DSITE_OUT=$(SITE_OUT)
+-D_SITE_EXT_TARGET_DIR=\"$(_SITE_EXT_TARGET_DIR)\"
 
 # deploy
 deploy: clean build
@@ -32,7 +31,7 @@ build:
 # clean the build directory
 clean:
 	@printf "%s\n" "Removing build archive."
-	@if [ -d "$(SITE_OUT)" ]; then find "$(SITE_OUT)" -mindepth 1 -delete; fi
+	@if [ -d "$(_SITE_OUT_DIR)" ]; then find "$(_SITE_OUT_DIR)" -mindepth 1 -delete; fi
 	@printf "%s\n" "Done."
 	
 .PHONY: build clean deploy
