@@ -1,7 +1,6 @@
 BasedOnStyle: LLVM
 
 AlignArrayOfStructures: Left
-AlignConsecutiveAssignments: true
 AlignConsecutiveBitFields: true
 AlignConsecutiveMacros: true
 AlignEscapedNewlines: Right

@@ -76,7 +76,7 @@ int create_html_index(char *, const char *, page_header_arr *);
 
 int __copy_file(const char *from, const char *to) {
         FILE *from_file = NULL;
-        FILE *to_file   = NULL;
+        FILE *to_file = NULL;
 
         if ((from_file = fopen(from, "r")) == NULL) {
                 fprintf(stderr, "from_file: %s\n\t%s (errno: %d, line: %d)\n", from,
@@ -91,7 +91,7 @@ int __copy_file(const char *from, const char *to) {
                 return -1;
         }
 
-        char *line     = NULL;
+        char *line = NULL;
         size_t bufsize = 0;
         ssize_t len;
         int result = 0;
@@ -132,8 +132,8 @@ int __create_output_dirs(void) {
 }
 
 FTS *__init_fts(const char *source) {
-        FTS *ftsp        = NULL;
-        char *paths[]    = {(char *)source, NULL};
+        FTS *ftsp = NULL;
+        char *paths[] = {(char *)source, NULL};
         int _fts_options = FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOCHDIR;
 
         if ((ftsp = fts_open(paths, _fts_options, NULL)) == NULL) {
@@ -163,9 +163,9 @@ void __shorten_date(char *in, char *out, size_t size) {
 }
 
 int parse_page_header(FILE *file, page_header *header) {
-        char *line    = NULL;
-        size_t len    = 0;
-        ssize_t read  = 0;
+        char *line = NULL;
+        size_t len = 0;
+        ssize_t read = 0;
         ssize_t readt = 0;
 
         bool in_header = true;
@@ -184,8 +184,8 @@ int parse_page_header(FILE *file, page_header *header) {
                 // split fields
                 char *colon = strchr(line, ':');
                 if (!colon) continue;
-                *colon      = '\0';
-                char *key   = line;
+                *colon = '\0';
+                char *key = line;
                 char *value = colon + 1;
 
                 while (isspace(*value)) {
@@ -243,7 +243,7 @@ int create_html_index(char *page_content, const char *output_path, page_header_a
         while (dest_line) {
                 if (!*dest_line) continue;
                 fprintf_ret = fprintf(dest_file, "%s\n", dest_line);
-                dest_line   = strtok(NULL, "\n");
+                dest_line = strtok(NULL, "\n");
         }
 
         // sort by creation time
@@ -329,7 +329,7 @@ int create_html_page(page_header *header, char *page_content, const char *output
         while (line) {
                 if (!*line) continue;
                 fprintf_ret = fprintf(dest_file, "%s\n", line);
-                line        = strtok(NULL, "\n");
+                line = strtok(NULL, "\n");
         }
 
         // close <main>
@@ -379,9 +379,9 @@ page_header *process_page_file(FTSENT *ftsentp) {
         strncpy(header->meta.path, page_href, _SITE_PATH_MAX - 1);
 
         // read content
-        int header_len      = parse_page_header(source_file, header);
+        int header_len = parse_page_header(source_file, header);
         size_t content_size = ftsentp->fts_statp->st_size - header_len;
-        char *page_content  = malloc(content_size + 1);
+        char *page_content = malloc(content_size + 1);
         if (page_content == NULL) {
                 fprintf(stderr, "Memory allocation failed for content\n");
                 iserror = true;
@@ -439,9 +439,9 @@ int process_index_file(char *index_file_path, page_header_arr *header_arr) {
         }
 
         // read content
-        int header_len      = parse_page_header(source_file, header);
+        int header_len = parse_page_header(source_file, header);
         size_t content_size = source_file_stat.st_size - header_len;
-        char *page_content  = malloc(content_size + 1);
+        char *page_content = malloc(content_size + 1);
         if (page_content == NULL) {
                 fprintf(stderr, "Memory allocation failed for content\n");
                 result = -1;
@@ -482,13 +482,12 @@ int main(void) {
                 return -1;
         }
         int result = 0;
-
-        FTS *ftsp       = NULL;
+        FTS *ftsp = NULL;
         FTSENT *ftsentp = NULL;
 
         page_header_arr header_arr = {
             .elems = {0},
-            .len   = 0,
+            .len = 0,
         };
 
         if (__create_output_dirs() != 0) {
@@ -524,7 +523,7 @@ int main(void) {
                         // possibly add path separator
                         if (path_len > 0 && to_path[path_len - 1] != '/' &&
                             path_len + 1 < sizeof(to_path)) {
-                                to_path[path_len]     = '/';
+                                to_path[path_len] = '/';
                                 to_path[path_len + 1] = '\0';
                         }
 
