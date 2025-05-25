@@ -13,6 +13,8 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
+#include <git2.h>
+
 #ifndef _SITE_EXT_TARGET_DIR
 #define _SITE_EXT_TARGET_DIR "/docs"
 #endif
@@ -472,6 +474,13 @@ int process_index_file(char *index_file_path, page_header_arr *header_arr) {
 }
 
 int main(void) {
+        git_libgit2_init();
+
+        git_repository **repo = NULL;
+        if (git_repository_open(repo, "./") != 0) {
+                fprintf(stderr, "%s (errno: %d, line: %d)\n", strerror(errno), errno, __LINE__);
+                return -1;
+        }
         int result = 0;
 
         FTS *ftsp       = NULL;

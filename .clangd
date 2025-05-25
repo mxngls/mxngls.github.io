@@ -11,5 +11,6 @@ CompileFlags:
     -Werror,
     -Wpedantic,
     -Wpointer-arith,
-    -D_FORTIFY_SOURCE=2
+    -D_FORTIFY_SOURCE=2,
+    -Ideps/libgit2/include
   ]
